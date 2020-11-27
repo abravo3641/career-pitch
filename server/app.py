@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import pyrebase
-from flask  import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response
 from routes.auth import auth_route                                                                                  # importing auth routes
 
 APP_ROOT = os.path.join(os.path.dirname(__file__), '..')                                                           
