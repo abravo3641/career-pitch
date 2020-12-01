@@ -20,11 +20,7 @@ class Applicant(Base):
           "school": self.school,
           "year": self.year,
           "gpa": self.gpa,
-          "last_company_name": self.last_company_name,
-          "last_company_role": self.last_company_role,
-          "languages": self.languages,
           "location": self.location,
-          "interest": self.interest,
           "picture_name": self.picture_name
         }
 
