@@ -82,9 +82,7 @@ class HomeFeed extends React.Component {
     handleShow(){
         this.setState({show: true});
     }
-    checkFile(){
    
-    }
 
   handleSubmit(e){
      console.log("Submit request recieved")
