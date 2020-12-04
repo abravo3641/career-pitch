@@ -174,10 +174,6 @@ class RegisterApplicant extends React.Component {
                     <input type="text" name="School" className="login-input" placeholder="School Name" />
                </div>
                <div className="input-group"> 
-                    <label htmlFor="name">Role</label>
-                    <input type="text" name="Role" className="login-input" placeholder="Role" />
-               </div>
-               <div className="input-group"> 
                     <label htmlFor="year">Year</label>
                     <input type="text" name="Year" className="login-input" placeholder="Year" />
                </div>

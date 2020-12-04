@@ -10,9 +10,8 @@ import {
     FormControl,
     Button,
     Card,
-    Media,
     Modal,
-    Image
+    Col
 } from 'react-bootstrap'
 
 
@@ -20,12 +19,12 @@ import {
 class HomeFeed extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {tab1: this.handleSelect}
         this.state = {
             activeTab: props.activeTab || "1"
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
+  
     handleSelect(selectedTab){
         this.setState({
             activeTab: selectedTab
@@ -69,10 +68,13 @@ class HomeFeed extends React.Component {
 }
 
 
+
  class ApplicantCards extends React.Component {
     constructor(props){
         super(props);
         this.state = {show:false}
+        this.state = {fileResume:false, fileCover:false, fileVid:false}
+        this.state = { formDataResume:null, formDataCover:null, formDataVid:null }
     }
     handleClose(){
         this.setState({show: false});
@@ -80,114 +82,153 @@ class HomeFeed extends React.Component {
     handleShow(){
         this.setState({show: true});
     }
+    checkFile(){
+   
+    }
+
+  handleSubmit(e){
+     console.log("Submit request recieved")
+     console.dir(this.state)
+   }
+
+   handleResume(e){
+     console.log("Resume is in place")
+     const files = e.target.files
+     const formdata = new FormData()
+     formdata.append('myFile', files[0])
+     this.setState({formDataResume:formdata})
+     if(files){
+       this.setState({fileResume:true})
+     }
+   }
+   handleCover(e){
+    console.log("Cover Letter is in place")
+    const files = e.target.files
+    const formdata = new FormData()
+    formdata.append('myFile', files[0])
+    this.setState({formDataCover:formdata})
+    if(files){
+      this.setState({fileCover:true})
+    }
+  }
+  handleVideo(e){
+    console.log("Video is in place")
+    const files = e.target.files
+    const formdata = new FormData()
+    formdata.append('myFile', files[0])
+    this.setState({formDataVid:formdata})
+    if(files){
+      this.setState({fileVid:true})
+    }
+  }
 
     render(){
        return (
-       <div>
-         <Card>
-           <div className="card flex-row flex-wrap">
-               <div className="card-header border-0" >
-                   <Card.Img top width="100%" src={Logo} alt="Card image"/>
+         <div>
+           <Card>
+             <div className="card flex-row flex-wrap">
+               <div className="card-header border-0">
+                 <Card.Img top width="100%" src={Logo} alt="Card image" />
                </div>
-           <div className="card-block">           
-           {/* <Card.Header as="h5">Featured</Card.Header> */}
-           <Card.Body>
-             <Card.Title>Job Title</Card.Title>
-             <Card.Text>
-               Company name and Company info goes into this section
-             </Card.Text>
-             <Button variant="primary" onClick={this.handleShow.bind(this)}>Show Static Backdrop</Button>
-           </Card.Body>
-           </div>
-           </div>
-         </Card>
-         <Modal
-          show={this.state.show}
-          onHide={this.handleClose.bind(this)}
-          backdrop="static"
-          keyboard={false}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header closeButton>
-          <div className="card flex-row flex-wrap">
-               <div className="card-header border-0" >
-                   <Card.Img src={Logo} alt="Card image" fluid/>
+               <div className="card-block">
+                 <Card.Body>
+                   <Card.Title>Job Title</Card.Title>
+                   <Card.Text>
+                     Company name and Company info goes into this section
+                   </Card.Text>
+                   <Button
+                     variant="primary"
+                     onClick={this.handleShow.bind(this)}
+                   >
+                     Show Static Backdrop
+                   </Button>
+                 </Card.Body>
                </div>
+             </div>
+           </Card>
+           <Modal
+             show={this.state.show}
+             onHide={this.handleClose.bind(this)}
+             backdrop="static"
+             keyboard={false}
+             size="lg"
+             aria-labelledby="contained-modal-title-vcenter"
+             centered
+           >
+             <Modal.Header closeButton>
+               <div className="card flex-row flex-wrap">
+                 <div className="card-header border-0">
+                   <Card.Img src={Logo} alt="Card image" fluid />
+                 </div>
                </div>
-            <Modal.Title>
-                Job title
-                <p> Company Name/ Location</p>
-            </Modal.Title>
-            {/* <Image src={Logo} style={{alignSelf:'flex-n'}} fluid /> */}
-            
-          </Modal.Header>
-          <Modal.Body>
-            I will not close if you click outside me. Don't even try to press
-            escape key. keyyyyyyy, GrI will not close if you click outside me. Don't even try to press
-            escape key. keyyyyyyy, GrI will not close if you click outside me. Don't even try to press
-            escape key. keyyyyyyy, GrI will not close if you click outside me. Don't even try to press
-            escape key. keyyyyyyy, GrI will not close if you click outside me. Don't even try to press
-            escape key. keyyyyyyy, Gr
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose.bind(this)}>
-              Close
-            </Button>
-            <Button variant="primary">Understood</Button>
-          </Modal.Footer>
-        </Modal>
-       </div>
-         
+               <Modal.Title>
+                 Job title
+                 <p> Company Name/ Location</p>
+               </Modal.Title>
+             </Modal.Header>
+             <Modal.Body>
+               I will not close if you click outside me. Don't even try to press
+               escape key. Company Info goes here
+             </Modal.Body>
+             <Modal.Footer>
+               <Form onSubmit={this.handleSubmit}>
+                 <Form.Row>
+                   <Col>
+                   <div className="mb-3">
+                       <Form.File id="resume" lang="en"  custom>
+                       <Form.File.Input isValid={(this.state.fileResume)} onChange={this.handleResume.bind(this)}/>
+                         <Form.File.Label data-browse="Browse" >
+                           Upload Resume
+                         </Form.File.Label>
+                         <Form.Control.Feedback type="valid">
+                           Checked!
+                         </Form.Control.Feedback>
+                       </Form.File>
+                     </div>
+                   </Col>
+                   <Col>
+                   <div className="mb-3">
+                       <Form.File id="coverLetter" lang="en"  custom>
+                       <Form.File.Input isValid={(this.state.fileCover)} onChange={this.handleCover.bind(this)}/>
+                         <Form.File.Label data-browse="Browse" >
+                           Upload Cover Letter
+                         </Form.File.Label>
+                         <Form.Control.Feedback type="valid">
+                           Checked!
+                         </Form.Control.Feedback>
+                       </Form.File>
+                     </div>
+                   </Col>
+                   <Col>
+                     <div className="mb-3">
+                       <Form.File id="video" lang="en" custom>
+                       <Form.File.Input isValid={(this.state.fileVid)} onChange={this.handleVideo.bind(this)}/>
+                         <Form.File.Label data-browse="Browse" >
+                           Upload Video
+                         </Form.File.Label>
+                         <Form.Control.Feedback type="valid">
+                           Checked!
+                         </Form.Control.Feedback>
+                       </Form.File>
+                     </div>
+                   </Col>
+                 </Form.Row>
+               <Button
+                 variant="secondary"
+                 onClick={this.handleClose.bind(this)}
+               >
+                 Close
+               </Button>
+               <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+               </Form>
+             </Modal.Footer>
+           </Modal>
+         </div>
        );
     }
 }
 
-class PopModal extends React.Component{
-    constructor(props){
-        super(props)
-        this.state = {show:false, setShow: false}
-    }
 
-    handleClose(){
-        this.setState({setShow: false});
-    }
-    handleShow(){
-        this.setState({setShow: true});
-    }
-
-    render(){
-        return (
-
-    <div>
-        <Button variant="primary" onClick={this.handleShow}>
-          Launch static backdrop modal
-        </Button>
-  
-        <Modal
-          show={this.show}
-          onHide={this.handleClose}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Modal title</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            I will not close if you click outside me. Don't even try to press
-            escape key.
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose.bind(this)}>
-              Close
-            </Button>
-            <Button variant="primary">Understood</Button>
-          </Modal.Footer>
-        </Modal>
-        </div>
-    )}
-  }
 
 
 export default HomeFeed;
