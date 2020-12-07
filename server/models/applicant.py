@@ -6,10 +6,10 @@ class Applicant(Base):
     __tablename__ = 'applicant'
     email = Column(String, primary_key=True)
     name = Column(String)
-    school = Column(String)
-    year = Column(Integer)
+    school_name = Column(String)
+    school_year = Column(String)
     gpa = Column(Float)
-    location = Column(String)
+    current_location = Column(String)
     picture_name = Column(String)
     applications = relationship('Job', secondary='application', back_populates='applicants')
 
@@ -17,10 +17,10 @@ class Applicant(Base):
         return {
           "email": self.email,
           "name": self.name,
-          "school": self.school,
-          "year": self.year,
+          "school_name": self.school_name,
+          "school_year": self.school_year,
           "gpa": self.gpa,
-          "location": self.location,
+          "current_location": self.current_location,
           "picture_name": self.picture_name
         }
 
