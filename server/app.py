@@ -16,7 +16,8 @@ app.register_blueprint(db_route, url_prefix = "/api/db")
 
 @app.route('/', methods=['GET'])
 def root():
-	return 'home route'
+    response =  jsonify({"code": "1", "message": 'home route'})
+    return make_response(response, 201)
 
 if __name__ == '__main__':
     app.run(debug=True)

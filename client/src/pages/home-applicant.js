@@ -1,7 +1,8 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Logo from "../public/pixel.png" 
-
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 
 import {
     Nav,
@@ -20,9 +21,21 @@ class HomeFeed extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: props.activeTab || "1"
+            activeTab: props.activeTab || "1",
+            applicantEmail:""
         };
         this.handleSelect = this.handleSelect.bind(this);
+    }
+
+    componentDidMount() {
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          this.props.history.push('/login');
+        }
+        else{
+          this.setState({applicantEmail: user.email})
+        }
+      })
     }
   
     handleSelect(selectedTab){
@@ -32,36 +45,56 @@ class HomeFeed extends React.Component {
         console.log(selectedTab)
     }
 
-    render() {
-        return (
-            <div>
-          <Navbar bg="light" variant="light">
-            <Navbar.Brand href="#home">Career Pitch</Navbar.Brand>
-            <Nav className="mr-auto">
-              <Nav.Link href="#home">Profile</Nav.Link>
-            </Nav>
-            <Form inline>
-              <FormControl
-                type="text"
-                placeholder="Search"
-                className="mr-sm-2"
-              />
-              <Button variant="outline-primary">Search</Button>
-            </Form>
-          </Navbar>
+    logoutClicked() {
+      firebase.auth().signOut().then(() => {
+        //Logged out sucessful
+        console.log('Logged user out successfully');
+        this.props.history.push('/login');
+      }).catch((err) => {
+        //Handle error
+        console.log(`Error: ${err}`);
+      })
+    }
 
-         <Nav fill variant="tabs" defaultActiveKey="1" onSelect={this.handleSelect} activeKey={this.state.activeTab}>
-            <Nav.Item>
-                <Nav.Link eventKey="1" >Available Jobs</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-                <Nav.Link eventKey="2">Applied Jobs</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-                <Nav.Link eventKey="disabled">Wishlist</Nav.Link>
-            </Nav.Item>
-         </Nav>
-         {(this.state.activeTab==="1") && <ApplicantCards /> }
+    render() {
+        const {applicantEmail} = this.state;
+        console.log(`Currently logged in as ${applicantEmail}`);
+        return (
+          <div>
+          {
+            applicantEmail ? 
+              <div> 
+                    <Navbar bg="light" variant="light">
+                    <Navbar.Brand href="#home">Career Pitch</Navbar.Brand>
+                    <Nav className="mr-auto">
+                      <Nav.Link href="#home">Profile</Nav.Link>
+                    </Nav>
+                    <Form inline>
+                      <FormControl
+                        type="text"
+                        placeholder="Search"
+                        className="mr-sm-2"
+                      />
+                      <Button variant="outline-primary" onClick={this.logoutClicked.bind(this)}>Logout</Button>
+                    </Form>
+                  </Navbar>
+
+                <Nav fill variant="tabs" defaultActiveKey="1" onSelect={this.handleSelect} activeKey={this.state.activeTab}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="1" >Available Jobs</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="2">Applied Jobs</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="disabled">Wishlist</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+                {(this.state.activeTab==="1") && <ApplicantCards /> }
+              </div>
+            : 
+            <h1>Please log in!</h1>
+          }
           </div>
         );
     }
@@ -85,22 +118,27 @@ class HomeFeed extends React.Component {
    
 
   handleSubmit(e){
-     console.log("Submit request recieved")
-     console.dir(this.state)
+    const {formDataResume, formDataCover, formDataVid} = this.state;
+    if (formDataResume && formDataCover && formDataVid) {
+      console.log({formDataResume, formDataCover, formDataVid})
+      //To do: Send post with all of the files to apply for a job
+      alert('Submission was successful')
+    }
+    else{
+      alert('Submission failed, please choose all files!')
+    }
    }
 
    handleResume(e){
-     console.log("Resume is in place")
      const files = e.target.files
      const formdata = new FormData()
      formdata.append('myFile', files[0])
      this.setState({formDataResume:formdata})
-     if(files){
+     if(files){ 
        this.setState({fileResume:true})
      }
    }
    handleCover(e){
-    console.log("Cover Letter is in place")
     const files = e.target.files
     const formdata = new FormData()
     formdata.append('myFile', files[0])
@@ -110,7 +148,6 @@ class HomeFeed extends React.Component {
     }
   }
   handleVideo(e){
-    console.log("Video is in place")
     const files = e.target.files
     const formdata = new FormData()
     formdata.append('myFile', files[0])
@@ -217,7 +254,7 @@ class HomeFeed extends React.Component {
                >
                  Close
                </Button>
-               <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+               <Button variant="primary" type="" onClick={this.handleSubmit.bind(this)}>Submit</Button>
                </Form>
              </Modal.Footer>
            </Modal>

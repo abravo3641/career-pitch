@@ -13,7 +13,28 @@ import LoginPage from "./pages/login"
 import MainPage from "./pages/index";
 import NotFoundPage from "./pages/404.js"
 import HomeFeed from "./pages/home-applicant"
+
+//Firebase Set up
+import withFirebaseAuth from 'react-with-firebase-auth' ;
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import firebaseConfig from './pages/firebaseConfig';
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const firebaseAppAuth = firebaseApp.auth();
+const providers = {
+  googleProvider: new firebase.auth.GoogleAuthProvider(),
+};
+
 class App extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      me: firebase.auth().currentUser
+    }
+  }
+
   render() { 
     return( 
     <Router>
@@ -28,4 +49,7 @@ class App extends Component {
   )};
 }
 
-export default App;
+export default withFirebaseAuth({
+  providers,
+  firebaseAppAuth,
+})(App);
