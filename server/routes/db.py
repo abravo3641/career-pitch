@@ -23,13 +23,10 @@ def clear_db():
 @db_route.route('/fill', methods=['POST'])
 def fill_db():
     try:
-        applicant_atrr = ['email', 'name', 'school', 'year', 'gpa', 'location', 'picture_name']
-        applicants_data = [ 
-            ('abravo@gmail.com', 'anthony','ccny',5,3.84,'nyc','/applicant/abravo@gmail.jpg'),
-            ('aninda@gmail.com', 'aninda','ccny',5,3.94,'nyc','/applicant/aninda@gmail.jpg'),
-            ('hasan@gmail.com', 'hasan', 'ccny',5,3.91,'nyc','/applicant/hasan@gmail.jpg') 
-        ]
-
+        applicant_atrr = ['email', 'name', 'school_name', 'school_year', 'gpa', 'current_location', 'picture_name']
+        applicants_data = [ ('abravo@gmail.com', 'anthony','ccny','junior',3.84,'nyc','/applicant/abravo@gmail.jpg'),
+                            ('aninda@gmail.com', 'aninda','ccny','senior',3.94,'nyc','/applicant/aninda@gmail.jpg'),
+                            ('hasan@gmail.com', 'hasan', 'ccny','freshman',3.91,'nyc','/applicant/hasan@gmail.jpg') ]
         recruiter_attr = ['email', 'name', 'company', 'role', 'company_logo_name', 'company_info']
         recruiter_data = [ 
             ('elsa@ibm.com', 'elsa', 'ibm','university recruiter','/company/ibm.jpg','good company'),
