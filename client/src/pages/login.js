@@ -1,10 +1,11 @@
 import React from "react";
-import reactDom from "react-dom"
 import '../scss/login.scss'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import FormCheck from 'react-bootstrap/FormCheck'
-import FormGroup from 'react-bootstrap/FormGroup'
-import { Form } from "react-bootstrap";
+import { 
+    Form,
+    FormCheck,
+    FormGroup 
+} from "react-bootstrap";
 
 class LoginPage extends React.Component {
     constructor(props){
@@ -82,13 +83,21 @@ class LoginBox extends React.Component {
 class RegisterBox extends React.Component {
     constructor(props){
         super(props);
-        this.state = {}
+        this.state = {isRecruiter:false, isApplicant:true}
     }
     
     submitRegister(e) {
     
     }
 
+    onChangetest(){
+        if(!this.state.isRecruiter){
+        this.setState({isRecruiter:true, isApplicant:false})
+    }else{
+        this.setState({isRecruiter:false, isApplicant:true})
+    }
+        console.log("On change from checkbox recieved")
+    }
     render(){
         return(
         <div className="inner-container">
@@ -96,6 +105,9 @@ class RegisterBox extends React.Component {
                 Register
             </div>
             <div className="box">
+                <FormGroup controlId="formBasicCheckbox">
+                    <Form.Check type="checkbox" label="Recruiter?" onChange={this.onChangetest.bind(this)} />
+                </FormGroup> 
                <div className="input-group"> 
                     <label htmlFor="name">Name</label>
                     <input type="text" name="name" className="login-input" placeholder="Name" />
@@ -109,9 +121,11 @@ class RegisterBox extends React.Component {
                     <label htmlFor="password">Password</label>
                     <input type="password" name="password" className="login-input" placeholder="Password" />
                </div>
-               <FormGroup controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Recruiter?" />
-                </FormGroup>            
+                
+                <div>  
+                {this.state.isRecruiter && <RegisterRecruiter /> }
+                {this.state.isApplicant && <RegisterApplicant />}
+                </div>
             <button type="button" className="login-btn" onClick={this.submitRegister.bind(this)}>Submit</button>
 
             </div>
@@ -121,18 +135,70 @@ class RegisterBox extends React.Component {
 
 }
 
+class RegisterRecruiter extends React.Component {
+    
+   
+    
+    render(){
+        return(
+            <div>
+            <div className="input-group"> 
+                    <label htmlFor="name">Company Name</label>
+                    <input type="text" name="Company" className="login-input" placeholder="Company Name" />
+               </div>
+               <div className="input-group"> 
+                    <label htmlFor="email">Role</label>
+                    <input type="text" name="Role" className="login-input" placeholder="Role" />
+               </div>
+                 <Form>
+                <Form.Group controlId="exampleForm.ControlTextarea1">
+                     <Form.Label>Company Info</Form.Label>
+                      <Form.Control as="textarea" rows={3} />
+                </Form.Group>
+                    <Form.Group>
+                         <Form.File id="CompanyLogo" label="Company Logo" />
+                    </Form.Group>
+                </Form>
+            </div>
+        )
+    }
+}
+
+class RegisterApplicant extends React.Component {
+     
+    render(){
+        return(
+            <div>
+            <div className="input-group"> 
+                    <label htmlFor="name">School Name</label>
+                    <input type="text" name="School" className="login-input" placeholder="School Name" />
+               </div>
+               <div className="input-group"> 
+                    <label htmlFor="year">Year</label>
+                    <input type="text" name="Year" className="login-input" placeholder="Year" />
+               </div>
+               <div className="input-group"> 
+                    <label htmlFor="Location">Location</label>
+                    <input type="text" name="Location" className="login-input" placeholder="Location" />
+               </div>
+               <div className="input-group"> 
+                    <label htmlFor="name">GPA</label>
+                    <input type="text" name="GPA" className="login-input" placeholder="GPA" />
+               </div>
+               
+                 <Form>
+                    <Form.Group>
+                         <Form.File id="ProfilePicture" label="Profile Picture" />
+                    </Form.Group>
+                </Form>
+
+            </div>
+        )
+    }
+}
 
 
 
-// reactDom.render(<App />, document.getElementById("root") );
 
-// const LoginPage = () => {
-//     return(
-//         <div>
-//             <h1>This is a router test</h1>
-//             <h3>Login Page</h3>
-//         </div>
-//     )
-// };
 
 export default LoginPage;
