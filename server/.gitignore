@@ -2,4 +2,4 @@
 __pycache__
 venv
 notes.txt
-node_modules
+.python-version

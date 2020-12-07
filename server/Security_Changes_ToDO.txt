@@ -1,0 +1,1 @@
+in routes/ need to change getting user email from url params to 

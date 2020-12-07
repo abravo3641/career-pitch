@@ -15,13 +15,13 @@ class Applicant(Base):
 
     def to_json(self):
         return {
-          "email": self.email,
-          "name": self.name,
-          "school": self.school,
-          "year": self.year,
-          "gpa": self.gpa,
-          "location": self.location,
-          "picture_name": self.picture_name
+            "email": self.email,
+            "name": self.name,
+            "school": self.school,
+            "year": self.year,
+            "gpa": self.gpa,
+            "location": self.location,
+            "picture_name": self.picture_name
         }
 
     def __repr__(self):
