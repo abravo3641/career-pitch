@@ -23,7 +23,6 @@ class Applicant(Base):
           "current_location": self.current_location,
           "picture_name": self.picture_name
         }
-
     def __repr__(self):
         return f'<Applicant({self.email})>'
     
