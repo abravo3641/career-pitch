@@ -14,10 +14,10 @@ def clear_db():
     try:
         Base.metadata.drop_all(bind=db)
         Base.metadata.create_all(db)
-        response =  jsonify({"code": "1", "message": "Database cleared successfully and reloaded schema"})
+        response =  jsonify({"code": 1, "message": "Database cleared successfully and reloaded schema"})
         return make_response(response, 201)
     except:
-        response =  jsonify({"code": "-1", "message": "Database not cleared"})
+        response =  jsonify({"code": -1, "message": "Database not cleared"})
         return make_response(response, 401)
 
 @db_route.route('/fill', methods=['POST'])
@@ -52,9 +52,9 @@ def fill_db():
         add_object_to_db(recruiter_attr, recruiter_data, Recruiter)
         add_object_to_db(job_atrr, job_data, Job)
         add_object_to_db(application_attr, application_data, Application)
-        response =  jsonify({"code": "1", "message": "Succesfully inserted dummy data"})
+        response =  jsonify({"code": 1, "message": "Succesfully inserted dummy data"})
         return make_response(response, 201)
     except:
         session.rollback()
-        response =  jsonify({"code": "-1", "message": "Dummy data can't be inserted. Try clearning db."})
+        response =  jsonify({"code": -1, "message": "Dummy data can't be inserted. Try clearning db."})
         return make_response(response, 401)

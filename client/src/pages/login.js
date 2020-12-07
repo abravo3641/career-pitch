@@ -1,6 +1,9 @@
 import React from "react";
 import '../scss/login.scss'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+
 import { 
     Form,
     FormCheck,
@@ -33,8 +36,8 @@ class LoginPage extends React.Component {
                 </div>
                </div>
                 <div className="box-container">
-                    {this.state.isLoginOpen && <LoginBox /> }
-                    {this.state.isRegisterOpen && <RegisterBox />}
+                    {this.state.isLoginOpen && <LoginBox history={this.props.history}/> }
+                    {this.state.isRegisterOpen && <RegisterBox history={this.props.history}/>}
                 </div>
             </div>) 
     }
@@ -43,12 +46,44 @@ class LoginPage extends React.Component {
 class LoginBox extends React.Component {
     constructor(props){
         super(props);
-        this.state = {};
+        this.state = {
+            email: "",
+            password: "",
+            isRecruiter: false
+        };
     }
-    
+
     submitLogin(e) {
-        
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(data => {
+            //To do: Verify that they are an applicant/recruiter by hitting db 
+            if(this.state.isRecruiter){
+                console.log('Recruiter logging');
+                this.props.history.push("/recruiter");
+            }
+            else{
+                console.log('Applicant logging');
+                this.props.history.push("/feed");
+            }
+        }).catch( error => {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorMessage);
+            alert('invalid credentials')
+            this.setState({email:"", password:""});
+        });
+
     }
+
+    checkboxChanged(e){
+        this.state.isRecruiter = !this.state.isRecruiter;
+    }
+
+    inputChanged(e){
+        const {name, value} = e.target;
+        this.setState({[name]:value});
+    }
+
 
     render(){
         return(
@@ -59,15 +94,15 @@ class LoginBox extends React.Component {
             <div className="box">
                <div className="input-group"> 
                     <label htmlFor="email">Email</label>
-                    <input type="text" name="email" className="login-input" placeholder="Email-Adress" />
+                    <input type="text" name="email" className="login-input" placeholder="Email-Adress" value={this.state.email} onChange={this.inputChanged.bind(this)}/>
                </div>
 
                <div className="input-group"> 
                     <label htmlFor="password">Password</label>
-                    <input type="password" name="password" className="login-input" placeholder="Password" />
+                    <input type="password" name="password" className="login-input" placeholder="Password" value={this.state.password} onChange={this.inputChanged.bind(this)}/>
                </div>
-               <FormGroup controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Recruiter?" />
+                <FormGroup controlId="formBasicCheckbox">
+                    <Form.Check type="checkbox" label="Recruiter?" onChange={this.checkboxChanged.bind(this)}/>
                 </FormGroup>
             <button type="button" className="login-btn" onClick={this.submitLogin.bind(this)}>Submit</button>
 
@@ -85,19 +120,15 @@ class RegisterBox extends React.Component {
         super(props);
         this.state = {isRecruiter:false, isApplicant:true}
     }
-    
-    submitRegister(e) {
-    
-    }
 
     onChangetest(){
         if(!this.state.isRecruiter){
         this.setState({isRecruiter:true, isApplicant:false})
-    }else{
+        }else{
         this.setState({isRecruiter:false, isApplicant:true})
+        }
     }
-        console.log("On change from checkbox recieved")
-    }
+
     render(){
         return(
         <div className="inner-container">
@@ -108,26 +139,12 @@ class RegisterBox extends React.Component {
                 <FormGroup controlId="formBasicCheckbox">
                     <Form.Check type="checkbox" label="Recruiter?" onChange={this.onChangetest.bind(this)} />
                 </FormGroup> 
-               <div className="input-group"> 
-                    <label htmlFor="name">Name</label>
-                    <input type="text" name="name" className="login-input" placeholder="Name" />
-               </div>
-               <div className="input-group"> 
-                    <label htmlFor="email">Email</label>
-                    <input type="text" name="email" className="login-input" placeholder="Email-Adress" />
-               </div>
-
-               <div className="input-group"> 
-                    <label htmlFor="password">Password</label>
-                    <input type="password" name="password" className="login-input" placeholder="Password" />
-               </div>
                 
                 <div>  
-                {this.state.isRecruiter && <RegisterRecruiter /> }
-                {this.state.isApplicant && <RegisterApplicant />}
+                    {this.state.isRecruiter && <RegisterRecruiter history={this.props.history}/> }
+                    {this.state.isApplicant && <RegisterApplicant history={this.props.history}/>}
                 </div>
-            <button type="button" className="login-btn" onClick={this.submitRegister.bind(this)}>Submit</button>
-
+                
             </div>
         </div>)
 
@@ -136,62 +153,232 @@ class RegisterBox extends React.Component {
 }
 
 class RegisterRecruiter extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            "email": "",
+            "name":"",
+            "company":"",
+            "role":"",
+            "company_logo_name": null,
+            "company_info":"",
+            "password":""
+        }
+    }
+
+    handleChange(e){
+        const {name, value} = e.target;
+        this.setState({[name]: value});
+    }
     
-   
+    submitRegister(e) {
+        const {email, name, company, role, company_logo_name, company_info, password} = this.state;
+        if (email && name && company && role && company_logo_name && company_info && password) {
+            // To do: Send post request here with all the data
+            firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(data => {
+                console.log('sucessfully created recruiter');
+                this.props.history.push('/recruiter');
+            }).catch(err => {
+                console.log(err);
+                alert('Error creating recruiter');
+            })
+        }
+        else{
+            alert('Please fill all fields!')
+        }
+    }
+
+    handle_company_pic(e){
+        const files = e.target.files;
+        const formdata = new FormData();
+        formdata.append('myFile', files[0]);
+        this.setState({company_logo_name:formdata});
+    }
     
     render(){
         return(
             <div>
-            <div className="input-group"> 
+                <div className="input-group"> 
+                    <label htmlFor="name">Name</label>
+                    <input type="text" name="name" value={this.name} className="login-input" placeholder="Name" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="email">Email</label>
+                    <input type="text" name="email" value={this.email} className="login-input" placeholder="Email-Adress" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="password">Password</label>
+                    <input type="password" name="password" value={this.password} className="login-input" placeholder="Password" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
                     <label htmlFor="name">Company Name</label>
-                    <input type="text" name="Company" className="login-input" placeholder="Company Name" />
+                    <input type="text" name="company" value={this.company} className="login-input" placeholder="Company Name" onChange={this.handleChange.bind(this)} />
                </div>
+
                <div className="input-group"> 
                     <label htmlFor="email">Role</label>
-                    <input type="text" name="Role" className="login-input" placeholder="Role" />
+                    <input type="text" name="role" value={this.role} className="login-input" placeholder="Role" onChange={this.handleChange.bind(this)} />
                </div>
-                 <Form>
-                <Form.Group controlId="exampleForm.ControlTextarea1">
-                     <Form.Label>Company Info</Form.Label>
-                      <Form.Control as="textarea" rows={3} />
-                </Form.Group>
-                    <Form.Group>
-                         <Form.File id="CompanyLogo" label="Company Logo" />
+
+               <Form>
+                    <Form.Group controlId="exampleForm.ControlTextarea1" >
+                        <Form.Label>Company Info</Form.Label>
+                        <Form.Control as="textarea" rows={3} name="company_info" value={this.state.company_info} onChange={this.handleChange.bind(this)} />
                     </Form.Group>
+                    <Form.Row>
+                        <Form.File id="company_logo" lang="en"  custom>
+                        <Form.File.Input isValid={(Boolean(this.state.company_logo_name))} onChange={this.handle_company_pic.bind(this)}/>
+                            <Form.File.Label data-browse="Browse" >
+                            Company Logo
+                            </Form.File.Label>
+                            <Form.Control.Feedback type="valid">
+                            Checked!
+                            </Form.Control.Feedback>
+                        </Form.File>
+                    </Form.Row>
                 </Form>
+                <button type="button" className="login-btn" onClick={this.submitRegister.bind(this)}>Submit</button>
             </div>
         )
     }
 }
 
 class RegisterApplicant extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            "current_location": "",
+            "email": "",
+            "gpa": 0,
+            "name": "",
+            "picture_name": "",
+            "school_name": "",
+            "school_year": "",
+            "password": "",
+            "picture_data": null
+        }
+    }
+
+    submitRegister(e) {
+        this.state.gpa = Number(this.state.gpa);
+        const {current_location, email, gpa, name, school_name, school_year, password, picture_data} = this.state;
+        if (current_location && email && gpa && name && school_name && school_year && password && picture_data) {
+            firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(data => {
+                let usr = {...this.state};
+                delete usr.password;
+                delete usr.picture_data
+                fetch('/api/applicant/',{
+                    method:'POST',
+                    body: JSON.stringify(usr),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if(res.ok) {
+                        console.log('Created user successfully');
+                        
+                        // upload profile pic
+                        fetch(`/api/applicant/profile_pic?email=${usr.email}`, {
+                            method: 'POST',
+                            body: this.state.picture_data
+                        }).then(res => {
+                            if (res.ok){
+                                console.log('uploaded image successfully')
+                                this.props.history.push("/feed");
+                            }
+                            else{
+                                // To do: Remove user from db because profile pic was uncessful
+                                alert('Error uploading pic')
+                            }
+                        }).catch(err => {
+                            console.log(err);
+                            alert('Error uploading pic')
+                        })
+                    }
+                    else {
+                        alert('Error creating applicant in db')
+                    }
+                })
+
+            }).catch(err => {
+                console.log(err);
+                alert('Error creating applicant');
+            })
+        }
+        else {
+            alert('Please fill all fields!')
+        }
+    }
+
+    handle_profile_pic(e){
+        const files = e.target.files;
+        const formdata = new FormData();
+        formdata.append('myFile', files[0]);
+        this.setState({picture_data:formdata});
+    }
+
+    handleChange(e){
+        const {name, value} = e.target;
+        this.setState({[name]: value});
+    }
      
     render(){
         return(
             <div>
-            <div className="input-group"> 
-                    <label htmlFor="name">School Name</label>
-                    <input type="text" name="School" className="login-input" placeholder="School Name" />
-               </div>
-               <div className="input-group"> 
-                    <label htmlFor="year">Year</label>
-                    <input type="text" name="Year" className="login-input" placeholder="Year" />
-               </div>
-               <div className="input-group"> 
-                    <label htmlFor="Location">Location</label>
-                    <input type="text" name="Location" className="login-input" placeholder="Location" />
-               </div>
-               <div className="input-group"> 
-                    <label htmlFor="name">GPA</label>
-                    <input type="text" name="GPA" className="login-input" placeholder="GPA" />
-               </div>
-               
-                 <Form>
-                    <Form.Group>
-                         <Form.File id="ProfilePicture" label="Profile Picture" />
-                    </Form.Group>
-                </Form>
+                <div className="input-group"> 
+                    <label htmlFor="name">Name</label>
+                    <input type="text" name="name" value={this.name} className="login-input" placeholder="Name" onChange={this.handleChange.bind(this)} />
+                </div>
 
+                <div className="input-group"> 
+                    <label htmlFor="email">Email</label>
+                    <input type="text" name="email" value={this.email} className="login-input" placeholder="Email-Adress" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="password">Password</label>
+                    <input type="password" name="password" value={this.password} className="login-input" placeholder="Password" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="name">School Name</label>
+                    <input type="text" name="school_name" value={this.school_name} className="login-input" placeholder="School Name" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="year">School Year</label>
+                    <input type="text" name="school_year" value={this.school_year} className="login-input" placeholder="Year" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="Location">Current Location</label>
+                    <input type="text" name="current_location" value={this.current_location} className="login-input" placeholder="Location" onChange={this.handleChange.bind(this)} />
+                </div>
+
+                <div className="input-group"> 
+                    <label htmlFor="name">GPA</label>
+                    <input type="number" name="gpa" value={this.gpa} className="login-input" placeholder="GPA" onChange={this.handleChange.bind(this)} />
+                </div>
+               
+                <Form>
+                    <Form.Row>
+                        <Form.File id="profile_pic" lang="en"  custom>
+                        <Form.File.Input isValid={(Boolean(this.state.picture_data))} onChange={this.handle_profile_pic.bind(this)}/>
+                            <Form.File.Label data-browse="Browse" >
+                            Upload Profile Pic
+                            </Form.File.Label>
+                            <Form.Control.Feedback type="valid">
+                            Checked!
+                            </Form.Control.Feedback>
+                        </Form.File>
+                    </Form.Row>
+                </Form>
+                <button type="button" className="login-btn" onClick={this.submitRegister.bind(this)}>Submit</button>
             </div>
         )
     }
