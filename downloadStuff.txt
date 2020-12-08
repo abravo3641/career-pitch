@@ -1,0 +1,13 @@
+works with node version 10.16.0
+
+MAC:
+    brew install postgresql
+
+LINUX:
+    sudo apt install postgresql postgresql-contrib
+
+
+sudo npm install -g node-gyp (if there is a node-pre-gyp issue)
+npm rebuild node-sass
+
+
