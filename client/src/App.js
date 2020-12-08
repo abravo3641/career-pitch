@@ -13,6 +13,7 @@ import LoginPage from "./pages/login"
 import MainPage from "./pages/index";
 import NotFoundPage from "./pages/404.js"
 import HomeFeed from "./pages/home-applicant"
+import HomeFeedRecruiter from "./pages/home-recruiter"
 
 //Firebase Set up
 import withFirebaseAuth from 'react-with-firebase-auth' ;
@@ -42,6 +43,7 @@ class App extends Component {
         <Route exact path="/" component={MainPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/feed" component={HomeFeed} /> 
+        <Route path="/feedRecruiter" component={HomeFeedRecruiter}/>
         <Route component={NotFoundPage} />
         
       </Switch>
