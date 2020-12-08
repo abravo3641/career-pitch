@@ -9,16 +9,17 @@ from helpers.firebase_config import auth
 from helpers.db_helpers import add_object_to_db
 auth_route = Blueprint("auth", __name__) 
 
+
 @auth_route.route('/login', methods=['POST'])
 def login():
     req = request.json
     try:
         token = auth.sign_in_with_email_and_password(req['email'], req['password'])                                 # Login-in Verificatrion -> (Returns error object if unsuccessful - error.message) gives token (idToken) and refresh token       
         user = auth.get_account_info(token['idToken'])                                                              # Get user info ()
-        response =  jsonify({"code": "1", "message": "Successfully logged in "+req['email']+"!"})
+        response =  jsonify({"code": 1, "message": "Successfully logged in "+req['email']+"!", "user": user})
         return make_response(response, 201)
     except:
-        response =  jsonify({"code": "-1", "message": "Invalid Email or Password!"})
+        response =  jsonify({"code": -1, "message": "Invalid Email or Password!"})
         return make_response(response, 401)
 
 @auth_route.route('/register', methods=['POST'])
