@@ -49,20 +49,34 @@ class LoginBox extends React.Component {
         this.state = {
             email: "",
             password: "",
-            isRecruiter: false
+            isRecruiter: false 
         };
     }
 
     submitLogin(e) {
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(data => {
-            //To do: Verify that they are an applicant/recruiter by hitting db 
+            //Verify that they are an applicant/recruiter by hitting db 
             if(this.state.isRecruiter){
                 console.log('Recruiter logging');
-                this.props.history.push("/recruiter");
+                fetch(`/api/recruiter/?email=${this.state.email}`).then(res => {
+                    if (res.ok){
+                        this.props.history.push("/feedRecruiter");
+                    }
+                    else{
+                        alert('you are not a recruiter!')
+                    }
+                })
             }
             else{
                 console.log('Applicant logging');
-                this.props.history.push("/feed");
+                fetch(`/api/applicant/?email=${this.state.email}`).then(res => {
+                    if (res.ok){
+                        this.props.history.push("/feed");
+                    }
+                    else{
+                        alert('you are not an applicant!')
+                    }
+                })
             }
         }).catch( error => {
             // Handle Errors here.
@@ -161,9 +175,10 @@ class RegisterRecruiter extends React.Component {
             "name":"",
             "company":"",
             "role":"",
-            "company_logo_name": null,
+            "company_logo_name": "",
             "company_info":"",
-            "password":""
+            "password":"",
+            "logo_data": null
         }
     }
 
@@ -173,15 +188,52 @@ class RegisterRecruiter extends React.Component {
     }
     
     submitRegister(e) {
-        const {email, name, company, role, company_logo_name, company_info, password} = this.state;
-        if (email && name && company && role && company_logo_name && company_info && password) {
-            // To do: Send post request here with all the data
+        const {email, name, company, role, logo_data, company_info, password} = this.state;
+        if (email && name && company && role && logo_data && company_info && password) {
             firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(data => {
-                console.log('sucessfully created recruiter');
-                this.props.history.push('/recruiter');
+                let usr = {...this.state};
+                delete usr.password;
+                delete usr.logo_data
+                fetch('/api/recruiter/',{
+                    method:'POST',
+                    body: JSON.stringify(usr),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if(res.ok) {
+                        console.log('Created user successfully');
+                        // upload company logo
+                        fetch(`/api/recruiter/company_logo?email=${usr.email}`, {
+                            method: 'POST',
+                            body: this.state.logo_data
+                        }).then(res => {
+                            if (res.ok){
+                                console.log('uploaded image successfully');
+                                console.log('sucessfully created recruiter');
+                                this.props.history.push("/feedRecruiter");
+                            }
+                            else{
+                                alert('Error uploading pic')
+                                firebase.auth().currentUser.delete()
+                                fetch(`/api/recruiter/?email=${usr.email}`, {
+                                    method: 'DELETE'
+                                });
+                            }
+                        }).catch(err => {
+                            console.log(err);
+                            firebase.auth().currentUser.delete()
+                            alert('Error uploading pic')
+                        })
+                    }
+                    else {
+                        firebase.auth().currentUser.delete()
+                        alert('Error creating recruiter in db')
+                    }
+                })
             }).catch(err => {
                 console.log(err);
-                alert('Error creating recruiter');
+                alert('Error creating recruiter in firebase');
             })
         }
         else{
@@ -193,7 +245,7 @@ class RegisterRecruiter extends React.Component {
         const files = e.target.files;
         const formdata = new FormData();
         formdata.append('myFile', files[0]);
-        this.setState({company_logo_name:formdata});
+        this.setState({logo_data:formdata});
     }
     
     render(){
@@ -231,7 +283,7 @@ class RegisterRecruiter extends React.Component {
                     </Form.Group>
                     <Form.Row>
                         <Form.File id="company_logo" lang="en"  custom>
-                        <Form.File.Input isValid={(Boolean(this.state.company_logo_name))} onChange={this.handle_company_pic.bind(this)}/>
+                        <Form.File.Input isValid={(Boolean(this.state.logo_data))} onChange={this.handle_company_pic.bind(this)}/>
                             <Form.File.Label data-browse="Browse" >
                             Company Logo
                             </Form.File.Label>
@@ -281,7 +333,6 @@ class RegisterApplicant extends React.Component {
                 }).then(res => {
                     if(res.ok) {
                         console.log('Created user successfully');
-                        
                         // upload profile pic
                         fetch(`/api/applicant/profile_pic?email=${usr.email}`, {
                             method: 'POST',
@@ -292,22 +343,27 @@ class RegisterApplicant extends React.Component {
                                 this.props.history.push("/feed");
                             }
                             else{
-                                // To do: Remove user from db because profile pic was uncessful
                                 alert('Error uploading pic')
+                                firebase.auth().currentUser.delete()
+                                fetch(`/api/applicant/?email=${usr.email}`, {
+                                    method: 'DELETE'
+                                });
                             }
                         }).catch(err => {
                             console.log(err);
+                            firebase.auth().currentUser.delete()
                             alert('Error uploading pic')
                         })
                     }
                     else {
+                        firebase.auth().currentUser.delete()
                         alert('Error creating applicant in db')
                     }
                 })
 
             }).catch(err => {
                 console.log(err);
-                alert('Error creating applicant');
+                alert('Error creating applicant in firebase');
             })
         }
         else {
