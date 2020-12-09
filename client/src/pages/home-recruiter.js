@@ -8,6 +8,8 @@ import {
     Card,
     Modal
 } from 'react-bootstrap';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Logo from "../public/pixel.png"; 
 import '../scss/login.scss';
@@ -19,16 +21,36 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 
 
-
-
-
-class HomeFeedRecruiter extends React.Component {
+class HomeFeedRecruiter extends React.Component { 
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: props.activeTab || "1"
+            activeTab: props.activeTab || "1",
+            recruiterEmail: ""
         };
         this.handleSelect = this.handleSelect.bind(this);
+    }
+
+    componentDidMount() {
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          this.props.history.push('/login');
+        }
+        else{
+          this.setState({recruiterEmail: user.email})
+        }
+      })
+    }
+
+    logoutClicked() {
+      firebase.auth().signOut().then(() => {
+        //Logged out sucessful
+        console.log('Logged user out successfully');
+        this.props.history.push('/login');
+      }).catch((err) => {
+        //Handle error
+        console.log(`Error: ${err}`);
+      })
     }
   
     handleSelect(selectedTab){
@@ -39,36 +61,46 @@ class HomeFeedRecruiter extends React.Component {
     }
 
     render() {
+      const {recruiterEmail} = this.state;
         return (
             <div>
-          <Navbar bg="light" variant="light">
-            <Navbar.Brand href="#home">Career Pitch</Navbar.Brand>
-            <Nav className="mr-auto">
-              <Nav.Link href="#home">Profile</Nav.Link>
-            </Nav>
-            <Form inline>
-              <FormControl
-                type="text"
-                placeholder="Search"
-                className="mr-sm-2"
-              />
-              <Button variant="outline-primary">Search</Button>
-            </Form>
-          </Navbar>
+              {
+                recruiterEmail ? 
+                <div>
+                  <Navbar bg="light" variant="light">
+                    <Navbar.Brand href="#home">Career Pitch</Navbar.Brand>
+                    <Nav className="mr-auto">
+                      <Nav.Link href="#home">Profile</Nav.Link>
+                    </Nav>
+                    <Form inline>
+                      <FormControl
+                        type="text"
+                        placeholder="Search"
+                        className="mr-sm-2"
+                      />
+                      <Button variant="outline-primary" onClick={this.logoutClicked.bind(this)}>Logout</Button>
+                    </Form>
+                  </Navbar>
 
-         <Nav fill variant="tabs" defaultActiveKey="1" onSelect={this.handleSelect} activeKey={this.state.activeTab}>
-            <Nav.Item>
-                <Nav.Link eventKey="1" >Applicants</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-                <Nav.Link eventKey="2">Post a Job</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-                <Nav.Link eventKey="disabled">Candidates</Nav.Link>
-            </Nav.Item>
-         </Nav>
-         {(this.state.activeTab==="1") && <ApplicantCards /> }
-         {(this.state.activeTab==="2") && <PostJob /> }
+                  <Nav fill variant="tabs" defaultActiveKey="1" onSelect={this.handleSelect} activeKey={this.state.activeTab}>
+                  <Nav.Item>
+                      <Nav.Link eventKey="1" >Applicants</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                      <Nav.Link eventKey="2">Post a Job</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                      <Nav.Link eventKey="disabled">Candidates</Nav.Link>
+                  </Nav.Item>
+                  </Nav>
+                  {(this.state.activeTab==="1") && <ApplicantCards /> }
+                  {(this.state.activeTab==="2") && <PostJob /> }
+                </div>
+                :
+                <h1>Please log in!</h1>
+              }
+              
+                
           </div>
         );
     }
