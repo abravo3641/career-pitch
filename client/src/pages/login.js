@@ -49,20 +49,34 @@ class LoginBox extends React.Component {
         this.state = {
             email: "",
             password: "",
-            isRecruiter: false
+            isRecruiter: false 
         };
     }
 
     submitLogin(e) {
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(data => {
-            //To do: Verify that they are an applicant/recruiter by hitting db 
+            //Verify that they are an applicant/recruiter by hitting db 
             if(this.state.isRecruiter){
                 console.log('Recruiter logging');
-                this.props.history.push("/feedRecruiter");
+                fetch(`/api/recruiter/?email=${this.state.email}`).then(res => {
+                    if (res.ok){
+                        this.props.history.push("/feedRecruiter");
+                    }
+                    else{
+                        alert('you are not a recruiter!')
+                    }
+                })
             }
             else{
                 console.log('Applicant logging');
-                this.props.history.push("/feed");
+                fetch(`/api/applicant/?email=${this.state.email}`).then(res => {
+                    if (res.ok){
+                        this.props.history.push("/feed");
+                    }
+                    else{
+                        alert('you are not an applicant!')
+                    }
+                })
             }
         }).catch( error => {
             // Handle Errors here.
@@ -176,7 +190,6 @@ class RegisterRecruiter extends React.Component {
     submitRegister(e) {
         const {email, name, company, role, logo_data, company_info, password} = this.state;
         if (email && name && company && role && logo_data && company_info && password) {
-            // To do: Send post request here with all the data
             firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(data => {
                 let usr = {...this.state};
                 delete usr.password;
