@@ -29,9 +29,9 @@ def fill_db():
                             ('hasan@gmail.com', 'hasan', 'ccny','freshman',3.91,'nyc','/applicant/hasan@gmail.jpg') ]
         recruiter_attr = ['email', 'name', 'company', 'role', 'company_logo_name', 'company_info']
         recruiter_data = [ 
-            ('elsa@ibm.com', 'elsa', 'ibm','university recruiter','/company/ibm.jpg','good company'),
-            ('lima@fb.com', 'lima', 'facebook','tech talent recruiter','/company/facebook.jpg','good company'),
-            ('emma@verizon.com', 'emma', 'verizon','Senior recruiter','/company/verizon.jpg','good company') 
+            ('elsa@ibm.com', 'elsa', 'ibm','university recruiter','https://career-pitch.s3.amazonaws.com/applicant/elsa@ibm.com/ibm.png','good company'),
+            ('lima@fb.com', 'lima', 'facebook','tech talent recruiter','https://career-pitch.s3.amazonaws.com/applicant/lima@fb.com/facebook.png','good company'),
+            ('emma@verizon.com', 'emma', 'verizon','Senior recruiter','https://career-pitch.s3.amazonaws.com/applicant/emma@verizon.com/verizon.jpg','good company') 
         ]
 
         job_atrr = ['recruiter_email', 'role', 'experience_level', 'location', 'salary']

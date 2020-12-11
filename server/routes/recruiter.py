@@ -29,7 +29,6 @@ def get_recruiters():
 def add_recruiter():
     attributes = request.json
     recruiter = Recruiter(**attributes)
-    print('here')
     try:
         session.add(recruiter)
         session.commit()
@@ -64,8 +63,25 @@ def adding_profile_pic():
     upload_file(file, destination)
     #update recruiter object with s3 obj url
     obj_url = f'https://{bucket_name}.s3.amazonaws.com/recruiter/{email}/{file_name}'
-    recruiter = session.query(Recruiter).filter(Recruiter.email == email).all()[0]
-    recruiter.company_logo_name = obj_url
+    recruiter = session.query(Recruiter).filter(Recruiter.email == email).all()
+    if not recruiter:
+        response =  jsonify({"code": -1, "message": "Invalid Email or User not in DB"})
+        return make_response(response, 401)
+
+    recruiter[0].company_logo_name = obj_url
     session.commit()
     response =  jsonify({"code": 1, "message": 'testing route'})
+    return make_response(response, 201)
+
+
+@recruiter_route.route('/jobs', methods=['GET'])
+def get_posted_jobs():
+    email = request.args.get('email')
+    recruiter = session.query(Recruiter).filter(Recruiter.email == email).all()
+    if not recruiter:
+        response =  jsonify({"code": -1, "message": "Invalid Email or User not in DB"})
+        return make_response(response, 401)
+
+    jobs = [job.to_json() for job in recruiter[0].jobs]
+    response = jsonify({"code": 1, "jobs": jobs})
     return make_response(response, 201)

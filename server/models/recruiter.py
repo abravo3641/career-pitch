@@ -11,6 +11,7 @@ class Recruiter(Base):
     company_logo_name = Column(String)
     company_info = Column(String)
     jobs = relationship("Job", back_populates="recruiter")
+
     def to_json(self):
         return {
             "email": self.email,
@@ -20,5 +21,6 @@ class Recruiter(Base):
             "company_logo_name": self.company_logo_name,
             "company_info": self.company_info,
         }
+        
     def __repr__(self):
         return f'<Recruiter({self.email})>'

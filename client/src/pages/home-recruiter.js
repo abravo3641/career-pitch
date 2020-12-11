@@ -57,7 +57,6 @@ class HomeFeedRecruiter extends React.Component {
         this.setState({
             activeTab: selectedTab
         })
-        console.log(selectedTab)
     }
 
     render() {
@@ -94,7 +93,7 @@ class HomeFeedRecruiter extends React.Component {
                   </Nav.Item>
                   </Nav>
                   {(this.state.activeTab==="1") && <ApplicantCards /> }
-                  {(this.state.activeTab==="2") && <PostJob /> }
+                  {(this.state.activeTab==="2") && <PostJob recruiterEmail = {recruiterEmail}/> }
                 </div>
                 :
                 <h1>Please log in!</h1>
@@ -264,7 +263,44 @@ class HomeFeedRecruiter extends React.Component {
 class PostJob extends React.Component {
     constructor(props){
         super(props);
+        this.state = {
+          role: "",
+          experience_level: "",
+          location: "",
+          salary: ""
+        }
 
+    }
+
+    submitClicked(){
+      const {recruiterEmail} = this.props;
+      const {role, experience_level, location, salary} = this.state;
+      if (role && experience_level && location && salary){
+        this.state.salary = Number(this.state.salary.replace(',', '').replace('k', '000').replace('K', '000'));
+        const job = {...this.state, recruiter_email:recruiterEmail};
+        fetch('/api/job/', {
+          method: 'POST',
+          body: JSON.stringify(job),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(res => {
+          if (!res.ok) {
+            alert('Error posting a job. Role mirght exist!')
+          }
+        })
+
+        this.setState({role:"", experience_level:"", location:"", salary:""});
+      }
+      else{
+        alert('Please fill all fields!');
+      }
+      
+    }
+
+    inputChanged(e){
+      const {name, value} = e.target;
+      this.setState({[name]: value});
     }
 
     render(){
@@ -274,7 +310,7 @@ class PostJob extends React.Component {
               <Form>
                 <Form.Group controlId="JobTitle">
                   <Form.Label>Job Title</Form.Label>
-                  <Form.Control placeholder="Role" />
+                  <Form.Control placeholder="Role" name="role" value={this.state.role} onChange={this.inputChanged.bind(this)}/>
                   {/* <Form.Text className="text-muted">
                 We'll never share your email with anyone else. Muted text goes here
               </Form.Text> */}
@@ -282,17 +318,17 @@ class PostJob extends React.Component {
 
                 <Form.Group controlId="Location">
                   <Form.Label>Location</Form.Label>
-                  <Form.Control placeholder="ex. New York" />
+                  <Form.Control placeholder="ex. New York" name="location" value={this.state.location} onChange={this.inputChanged.bind(this)} />
                 </Form.Group>
                 <Form.Group controlId="SalaryRange">
                   <Form.Label>SalaryRange</Form.Label>
-                  <Form.Control placeholder="in US dollars per year" />
+                  <Form.Control placeholder="in US dollars per year" name="salary" value={this.state.salary} onChange={this.inputChanged.bind(this)} />
                 </Form.Group>
                 <Form.Group controlId="ExperienceLevel">
                   <Form.Label>Experience Level Info</Form.Label>
-                  <Form.Control as="textarea" rows={3} />
+                  <Form.Control as="textarea" rows={3} name="experience_level" value={this.state.experience_level} onChange={this.inputChanged.bind(this)}/>
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="primary" onClick={this.submitClicked.bind(this)}>
                   Post Job
                 </Button>
               </Form>
