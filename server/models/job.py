@@ -10,7 +10,16 @@ class Job(Base):
     experience_level = Column(String)
     location = Column(String)
     salary = Column(Float)
-    applicants = relationship('Applicant', secondary='application', back_populates='applications')
+    applicants = relationship('Applicant', secondary='application', back_populates='jobs')
+
+    def to_json(self):
+        return {
+          "recruiter_email": self.recruiter_email,
+          "role": self.role,
+          "experience_level": self.experience_level,
+          "location": self.location,
+          "salary": self.salary
+        }
 
     def __repr__(self):
         return f'<Job({self.recruiter_email}, {self.role})>'

@@ -62,8 +62,25 @@ def adding_profile_pic():
     upload_file(file, destination)
     #update applicant object with s3 obj url
     obj_url = f'https://{bucket_name}.s3.amazonaws.com/applicant/{email}/{file_name}'
-    applicant = session.query(Applicant).filter(Applicant.email == email).all()[0]
-    applicant.picture_name = obj_url
+    applicant = session.query(Applicant).filter(Applicant.email == email).all()
+    if not applicant:
+        response =  jsonify({"code": -1, "message": "Invalid Email or User not in DB"})
+        return make_response(response, 401)
+        
+    applicant[0].picture_name = obj_url
     session.commit()
     response =  jsonify({"code": 1, "message": 'testing route'})
+    return make_response(response, 201)
+
+
+@applicant_route.route('/jobs', methods=['GET'])
+def get_applied_jobs():
+    email = request.args.get('email')
+    applicant = session.query(Applicant).filter(Applicant.email == email).all()
+    if not applicant:
+        response =  jsonify({"code": -1, "message": "Invalid Email or User not in DB"})
+        return make_response(response, 401)
+
+    jobs_applied = [job.to_json() for job in applicant[0].jobs]
+    response =  jsonify({"code": 1, "jobs": jobs_applied})
     return make_response(response, 201)

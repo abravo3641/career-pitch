@@ -22,7 +22,8 @@ class HomeFeed extends React.Component {
         super(props);
         this.state = {
             activeTab: props.activeTab || "1",
-            applicantEmail:""
+            applicantEmail:"",
+            jobs: []
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
@@ -34,15 +35,35 @@ class HomeFeed extends React.Component {
         }
         else{
           this.setState({applicantEmail: user.email})
+          
+          fetch('/api/job/all').then(res => res.json()).then(res => {
+            let allJobs = res.jobs;
+            fetch(`/api/applicant/jobs?email=${this.state.applicantEmail}`).then(res => res.json()).then(res => {
+              //Only show jobs that applicatn has not applied to
+              const appliedJobs = res.jobs;
+              const avaliableJobs = allJobs.filter(job => {
+                const {recruiter, role} = job;
+                for(let i=0; i<appliedJobs.length; i++){
+                  const appliedJob = appliedJobs[i];
+                  if (appliedJob.recruiter === recruiter && appliedJob.role === role){
+                    return false;
+                  }
+                }
+                return true;
+              })
+              this.setState({jobs: avaliableJobs});
+            })
+          })
         }
       })
+
+      
     }
   
     handleSelect(selectedTab){
         this.setState({
             activeTab: selectedTab
         })
-        console.log(selectedTab)
     }
 
     logoutClicked() {
@@ -58,7 +79,6 @@ class HomeFeed extends React.Component {
 
     render() {
         const {applicantEmail} = this.state;
-        console.log(`Currently logged in as ${applicantEmail}`);
         return (
           <div>
           {
@@ -90,10 +110,15 @@ class HomeFeed extends React.Component {
                         <Nav.Link eventKey="disabled">Wishlist</Nav.Link>
                     </Nav.Item>
                 </Nav>
-                {(this.state.activeTab==="1") && <ApplicantCards /> }
+                {
+                  (this.state.activeTab==="1") 
+                  && 
+                  this.state.jobs.map(job => <ApplicantCards job={job}/>)
+                }
+
               </div>
             : 
-            <h1>Please log in!</h1>
+            <h1>Loading!</h1>
           }
           </div>
         );
@@ -105,17 +130,32 @@ class HomeFeed extends React.Component {
  class ApplicantCards extends React.Component {
     constructor(props){
         super(props);
-        this.state = {show:false}
-        this.state = {fileResume:false, fileCover:false, fileVid:false}
-        this.state = { formDataResume:null, formDataCover:null, formDataVid:null }
+        this.state = {
+          show:false, 
+          fileResume:false, 
+          fileCover:false, 
+          fileVid:false, 
+          formDataResume:null, 
+          formDataCover:null, 
+          formDataVid:null,
+          recruiter: null
+        }
+
     }
+
     handleClose(){
         this.setState({show: false});
     }
+
     handleShow(){
         this.setState({show: true});
     }
-   
+  
+    componentDidMount(){
+      fetch(`/api/recruiter/?email=${this.props.job.recruiter_email}`).then(res => res.json()).then(res => {
+        this.setState({recruiter: res.recruiter})
+      })
+    }
 
   handleSubmit(e){
     const {formDataResume, formDataCover, formDataVid} = this.state;
@@ -158,106 +198,114 @@ class HomeFeed extends React.Component {
   }
 
     render(){
+      const {experience_level, location, recruiter_email, role, salary} = this.props.job;
+      const {recruiter} = this.state;
        return (
          <div>
-           <Card>
-             <div className="card flex-row flex-wrap">
-               <div className="card-header border-0">
-                 <Card.Img top width="100%" src={Logo} alt="Card image" />
-               </div>
-               <div className="card-block">
-                 <Card.Body>
-                   <Card.Title>Job Title</Card.Title>
-                   <Card.Text>
-                     Company name and Company info goes into this section
-                   </Card.Text>
-                   <Button
-                     variant="primary"
-                     onClick={this.handleShow.bind(this)}
-                   >
-                     Show Static Backdrop
-                   </Button>
-                 </Card.Body>
-               </div>
-             </div>
-           </Card>
-           <Modal
-             show={this.state.show}
-             onHide={this.handleClose.bind(this)}
-             backdrop="static"
-             keyboard={false}
-             size="lg"
-             aria-labelledby="contained-modal-title-vcenter"
-             centered
-           >
-             <Modal.Header closeButton>
-               <div className="card flex-row flex-wrap">
-                 <div className="card-header border-0">
-                   <Card.Img src={Logo} alt="Card image" fluid />
-                 </div>
-               </div>
-               <Modal.Title>
-                 Job title
-                 <p> Company Name/ Location</p>
-               </Modal.Title>
-             </Modal.Header>
-             <Modal.Body>
-               I will not close if you click outside me. Don't even try to press
-               escape key. Company Info goes here
-             </Modal.Body>
-             <Modal.Footer>
-               <Form onSubmit={this.handleSubmit}>
-                 <Form.Row>
-                   <Col>
-                   <div className="mb-3">
-                       <Form.File id="resume" lang="en"  custom>
-                       <Form.File.Input isValid={(this.state.fileResume)} onChange={this.handleResume.bind(this)}/>
-                         <Form.File.Label data-browse="Browse" >
-                           Upload Resume
-                         </Form.File.Label>
-                         <Form.Control.Feedback type="valid">
-                           Checked!
-                         </Form.Control.Feedback>
-                       </Form.File>
-                     </div>
-                   </Col>
-                   <Col>
-                   <div className="mb-3">
-                       <Form.File id="coverLetter" lang="en"  custom>
-                       <Form.File.Input isValid={(this.state.fileCover)} onChange={this.handleCover.bind(this)}/>
-                         <Form.File.Label data-browse="Browse" >
-                           Upload Cover Letter
-                         </Form.File.Label>
-                         <Form.Control.Feedback type="valid">
-                           Checked!
-                         </Form.Control.Feedback>
-                       </Form.File>
-                     </div>
-                   </Col>
-                   <Col>
-                     <div className="mb-3">
-                       <Form.File id="video" lang="en" custom>
-                       <Form.File.Input isValid={(this.state.fileVid)} onChange={this.handleVideo.bind(this)}/>
-                         <Form.File.Label data-browse="Browse" >
-                           Upload Video
-                         </Form.File.Label>
-                         <Form.Control.Feedback type="valid">
-                           Checked!
-                         </Form.Control.Feedback>
-                       </Form.File>
-                     </div>
-                   </Col>
-                 </Form.Row>
-               <Button
-                 variant="secondary"
-                 onClick={this.handleClose.bind(this)}
-               >
-                 Close
-               </Button>
-               <Button variant="primary" type="" onClick={this.handleSubmit.bind(this)}>Submit</Button>
-               </Form>
-             </Modal.Footer>
-           </Modal>
+           {
+             recruiter ?
+             <div>
+              <Card>
+                <div className="card flex-row flex-wrap">
+                  <div className="card-header border-0">
+                    <Card.Img src={recruiter.company_logo_name} alt="Card image" style={{maxWidth:250, maxHeight:250}}/>
+                  </div>
+                  <div className="card-block">
+                    <Card.Body>
+                      <Card.Title>{role}</Card.Title>
+                      <Card.Text>
+                        {recruiter.company}
+                      </Card.Text>
+                      <Button
+                        variant="primary"
+                        onClick={this.handleShow.bind(this)}
+                      >
+                        More info & apply
+                      </Button>
+                    </Card.Body>
+                  </div>
+                </div>
+              </Card>
+              <Modal
+                show={this.state.show}
+                onHide={this.handleClose.bind(this)}
+                backdrop="static"
+                keyboard={false}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+              >
+                <Modal.Header closeButton>
+                  <div className="card flex-row flex-wrap">
+                    <div className="card-header border-0">
+                      <Card.Img src={recruiter.company_logo_name} alt="Card image" fluid style={{maxWidth:150, maxHeight:150}}/>
+                    </div>
+                  </div>
+                  <Modal.Title style={{marginLeft: 15}}>
+                    {role},&nbsp; {location}
+                    <p> {recruiter.company}</p>
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {experience_level}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Form onSubmit={this.handleSubmit}>
+                    <Form.Row>
+                      <Col>
+                      <div className="mb-3">
+                          <Form.File id="resume" lang="en"  custom>
+                          <Form.File.Input isValid={(this.state.fileResume)} onChange={this.handleResume.bind(this)}/>
+                            <Form.File.Label data-browse="Browse" >
+                              Upload Resume
+                            </Form.File.Label>
+                            <Form.Control.Feedback type="valid">
+                              Checked!
+                            </Form.Control.Feedback>
+                          </Form.File>
+                        </div>
+                      </Col>
+                      <Col>
+                      <div className="mb-3">
+                          <Form.File id="coverLetter" lang="en"  custom>
+                          <Form.File.Input isValid={(this.state.fileCover)} onChange={this.handleCover.bind(this)}/>
+                            <Form.File.Label data-browse="Browse" >
+                              Upload Cover Letter
+                            </Form.File.Label>
+                            <Form.Control.Feedback type="valid">
+                              Checked!
+                            </Form.Control.Feedback>
+                          </Form.File>
+                        </div>
+                      </Col>
+                      <Col>
+                        <div className="mb-3">
+                          <Form.File id="video" lang="en" custom>
+                          <Form.File.Input isValid={(this.state.fileVid)} onChange={this.handleVideo.bind(this)}/>
+                            <Form.File.Label data-browse="Browse" >
+                              Upload Video
+                            </Form.File.Label>
+                            <Form.Control.Feedback type="valid">
+                              Checked!
+                            </Form.Control.Feedback>
+                          </Form.File>
+                        </div>
+                      </Col>
+                    </Form.Row>
+                  <Button
+                    variant="secondary"
+                    onClick={this.handleClose.bind(this)}
+                  >
+                    Close
+                  </Button>
+                  <Button variant="primary" type="" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+                  </Form>
+                </Modal.Footer>
+              </Modal>
+           </div>
+           :
+            <h6>No valid recruiter found</h6>
+           }
          </div>
        );
     }

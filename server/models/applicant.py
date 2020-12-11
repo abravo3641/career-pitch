@@ -11,7 +11,7 @@ class Applicant(Base):
     gpa = Column(Float)
     current_location = Column(String)
     picture_name = Column(String)
-    applications = relationship('Job', secondary='application', back_populates='applicants')
+    jobs = relationship('Job', secondary='application', back_populates='applicants')
 
     def to_json(self):
         return {
@@ -23,6 +23,7 @@ class Applicant(Base):
           "current_location": self.current_location,
           "picture_name": self.picture_name
         }
+        
     def __repr__(self):
         return f'<Applicant({self.email})>'
     

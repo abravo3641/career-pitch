@@ -6,6 +6,7 @@ from routes.auth import auth_route
 from routes.applicant import applicant_route
 from routes.recruiter import recruiter_route
 from routes.db import db_route
+from routes.job import job_route
 
 APP_ROOT = os.path.join(os.path.dirname(__file__), '..')                                                           
 dotenv_path = os.path.join(APP_ROOT, '.env')
@@ -16,6 +17,8 @@ app.register_blueprint(auth_route,      url_prefix = "/api/auth")
 app.register_blueprint(applicant_route, url_prefix = "/api/applicant")   
 app.register_blueprint(recruiter_route, url_prefix = "/api/recruiter")     
 app.register_blueprint(db_route,        url_prefix = "/api/db")
+app.register_blueprint(job_route,        url_prefix = "/api/job")
+
 
 @app.route('/', methods=['GET'])
 def root():
