@@ -23,7 +23,8 @@ class HomeFeed extends React.Component {
         this.state = {
             activeTab: props.activeTab || "1",
             applicantEmail:"",
-            jobs: []
+            jobs: [],
+            count: 0
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
@@ -59,6 +60,7 @@ class HomeFeed extends React.Component {
 
       
     }
+    
   
     handleSelect(selectedTab){
         this.setState({
@@ -113,7 +115,7 @@ class HomeFeed extends React.Component {
                 {
                   (this.state.activeTab==="1") 
                   && 
-                  this.state.jobs.map(job => <ApplicantCards job={job}/>)
+                  this.state.jobs.map(job => <ApplicantCards key={++this.state.count} job={job} applicantEmail={applicantEmail} history={this.props.history}/>)
                 }
 
               </div>
@@ -138,7 +140,8 @@ class HomeFeed extends React.Component {
           formDataResume:null, 
           formDataCover:null, 
           formDataVid:null,
-          recruiter: null
+          recruiter: null,
+          formdata: new FormData()
         }
 
     }
@@ -159,10 +162,43 @@ class HomeFeed extends React.Component {
 
   handleSubmit(e){
     const {formDataResume, formDataCover, formDataVid} = this.state;
-    if (formDataResume && formDataCover && formDataVid) {
-      console.log({formDataResume, formDataCover, formDataVid})
-      //To do: Send post with all of the files to apply for a job
-      alert('Submission was successful')
+    const recruiter = this.state.recruiter.email;
+    const applicant = this.props.applicantEmail;
+    const video_name = "";
+    const resume_name = "";
+    const cover_letter_name = "";
+    const {role} = this.props.job;
+    const status = 'applied';
+
+    if (recruiter && applicant && formDataVid && formDataResume && formDataCover && role) {
+      //Send post with all of the json data to apply for a job
+      fetch('/api/application/', {
+          method: 'POST',
+          body: JSON.stringify({applicant, recruiter, role, status, video_name, resume_name, cover_letter_name}),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+      }).then(res => {
+        if (res.ok){
+          this.props.history.push('/feed')
+          //Send post with all of files to apply for a job
+          fetch(`/api/application/files?recruiter=${recruiter}&role=${role}&applicant=${applicant}`, {
+            method: 'POST',
+            body: this.state.formdata
+          }).then(res => {
+            if (!res.ok){
+              //delete application entry due to error in uploading files
+              alert('Error uploading documents for last job')
+              fetch(`/api/application/?applicant=${applicant}&recruiter=${recruiter}&role=${role}`, {
+                method: 'DELETE'
+              });
+            }
+          })
+        }
+        else{
+          alert('Error creating application in db')
+        }
+      })
     }
     else{
       alert('Submission failed, please choose all files!')
@@ -170,27 +206,30 @@ class HomeFeed extends React.Component {
    }
 
    handleResume(e){
-     const files = e.target.files
-     const formdata = new FormData()
-     formdata.append('myFile', files[0])
+     const files = e.target.files;
+     const formdata = new FormData();
+     this.state.formdata.append('myResume', files[0])
+     formdata.append('myResume', files[0])
      this.setState({formDataResume:formdata})
      if(files){ 
        this.setState({fileResume:true})
      }
    }
    handleCover(e){
-    const files = e.target.files
-    const formdata = new FormData()
-    formdata.append('myFile', files[0])
+    const files = e.target.files;
+    const formdata = new FormData();
+    this.state.formdata.append('myCover', files[0])
+    formdata.append('myCover', files[0])
     this.setState({formDataCover:formdata})
     if(files){
       this.setState({fileCover:true})
     }
   }
   handleVideo(e){
-    const files = e.target.files
-    const formdata = new FormData()
-    formdata.append('myFile', files[0])
+    const files = e.target.files;
+    const formdata = new FormData();
+    this.state.formdata.append('myVideo', files[0])
+    formdata.append('myVideo', files[0]);
     this.setState({formDataVid:formdata})
     if(files){
       this.setState({fileVid:true})
@@ -238,7 +277,7 @@ class HomeFeed extends React.Component {
                 <Modal.Header closeButton>
                   <div className="card flex-row flex-wrap">
                     <div className="card-header border-0">
-                      <Card.Img src={recruiter.company_logo_name} alt="Card image" fluid style={{maxWidth:150, maxHeight:150}}/>
+                      <Card.Img src={recruiter.company_logo_name} alt="Card image" style={{maxWidth:150, maxHeight:150}}/>
                     </div>
                   </div>
                   <Modal.Title style={{marginLeft: 15}}>
@@ -298,7 +337,7 @@ class HomeFeed extends React.Component {
                   >
                     Close
                   </Button>
-                  <Button variant="primary" type="" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+                  <Button variant="primary" onClick={this.handleSubmit.bind(this)}>Submit</Button>
                   </Form>
                 </Modal.Footer>
               </Modal>
