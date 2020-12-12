@@ -26,7 +26,9 @@ class HomeFeedRecruiter extends React.Component {
         super(props);
         this.state = {
             activeTab: props.activeTab || "1",
-            recruiterEmail: ""
+            recruiterEmail: "",
+            applications: [],
+            count:0
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
@@ -38,6 +40,10 @@ class HomeFeedRecruiter extends React.Component {
         }
         else{
           this.setState({recruiterEmail: user.email})
+          fetch('/api/application/all').then(res => res.json()).then(res => {
+            const validApplications = res.applications.filter(application => application.recruiter === this.state.recruiterEmail);
+            this.setState({applications: validApplications});
+          })
         }
       })
     }
@@ -92,7 +98,7 @@ class HomeFeedRecruiter extends React.Component {
                       <Nav.Link eventKey="disabled">Candidates</Nav.Link>
                   </Nav.Item>
                   </Nav>
-                  {(this.state.activeTab==="1") && <ApplicantCards /> }
+                  {(this.state.activeTab==="1") && this.state.applications.map(application => <ApplicantCards key={++this.state.count} application={application} recruiterEmail={recruiterEmail}/>)}
                   {(this.state.activeTab==="2") && <PostJob recruiterEmail = {recruiterEmail}/> }
                 </div>
                 :
@@ -115,7 +121,11 @@ class HomeFeedRecruiter extends React.Component {
         this.state = { formDataResume:null, formDataCover:null, formDataVid:null }
         this.state = {isOpen: false}
         this.state = {showPdfCover: false, showPdfResume: false}
-          
+        this.applicant = null
+    }
+
+    componentDidMount(){
+      fetch(`/api/applicant/?email=${this.props.application.applicant}`).then(res => res.json()).then(res => this.setState({applicant: res.applicant}))
     }
 
     openVid(){
@@ -126,8 +136,8 @@ class HomeFeedRecruiter extends React.Component {
     }
     openPdfCover(){
         this.setState({showPdfCover:true});
-        // window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
     }
+    
     openPdfResume(){
         this.setState({showPdfResume:true})
     }
@@ -159,101 +169,113 @@ class HomeFeedRecruiter extends React.Component {
   }
 
     render(){
+      const {applicant} = this.state;
+      const {recruiter, role, status, resume_name, conver_letter_name, video_name} = this.props.application;
        return (
          <div>
-           <Card>
-             <div className="card flex-row flex-wrap">
-               <div className="card-header border-0">
-                 <Card.Img top width="100%" src={Logo} alt="Card image" />
-               </div>
-               <div className="card-block">
-                 <Card.Body>
-                   <Card.Title>Candidate Name</Card.Title>
-                   <Card.Text>
-                     Job name and maybe description goes into this section
-                   </Card.Text>
-                   <Button
-                     variant="primary"
-                     onClick={this.handleShow.bind(this)}
-                   >
-                     Show Static Backdrop
-                   </Button>
-                 </Card.Body>
-               </div>
-             </div>
-           </Card>
-           <Modal
-             show={this.state.show}
-             onHide={this.handleClose.bind(this)}
-             backdrop="static"
-             keyboard={false}
-             size="lg"
-             aria-labelledby="contained-modal-title-vcenter"
-             centered
-           >
-             <Modal.Header closeButton>
-               <div className="card flex-row flex-wrap">
-                 <div className="card-header border-0">
-                   <Card.Img src={Logo} alt="Card image" fluid />
-                 </div>
-               </div>
-               <Modal.Title>
-                 Job title
-                 <p> Applicant Name </p>
-               </Modal.Title>
-             </Modal.Header>
-             <Modal.Body>
-               Applicant Info goes in here, possible location school, gpa such things.
-             </Modal.Body>
-             <Modal.Footer>
-               <div className="mb-2">
-                    <Button variant="secondary" size="lg" onClick={this.openPdfResume.bind(this)}> Show Resume </Button> {' '}
-                    <Button variant="secondary" size="lg" onClick={this.openPdfCover.bind(this)} > Show Cover Letter</Button> {' '}
-                    <Button variant="secondary" size="lg" onClick={this.openVid.bind(this)}>Play Video</Button> 
-                </div>
-               <Button
-                 variant="secondary"
-                 onClick={this.handleClose.bind(this)}
-               >
-                 Close
-               </Button>
-               <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>Respond</Button> 
-             </Modal.Footer>
-           </Modal>
-           <Modal
-             show={this.state.isOpen}
-             onHide={this.closeVid.bind(this)}
-             keyboard={false}
-             size="lg"
-             aria-labelledby="contained-modal-title-vcenter"
-             centered
-           >
-               <Player
-                playsInline
-                poster={Logo}
-                src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
-                 />
-           </Modal>
-           <Modal
-             show={this.state.showPdfCover}
-             onHide={this.closePdf.bind(this)}
-             keyboard={false}
-             size="lg"
-             aria-labelledby="contained-modal-title-vcenter"
-             centered
-           >
-               {<ViewPdfCoverLetter />}
-           </Modal>
-           <Modal
-             show={this.state.showPdfResume}
-             onHide={this.closePdf.bind(this)}
-             keyboard={false}
-             size="lg"
-             aria-labelledby="contained-modal-title-vcenter"
-             centered
-           >
-               {<ViewPdfResume />}
-           </Modal>
+          {
+            applicant ?
+              <div> 
+                <Card>
+                    <div className="card flex-row flex-wrap">
+                      <div className="card-header border-0">
+                        <Card.Img width="100%" src={applicant.picture_name} alt="Card image" style={{maxWidth:250, maxHeight:250}}/>
+                      </div>
+                      <div className="card-block">
+                        <Card.Body>
+                          <Card.Title>{applicant.name}</Card.Title>
+                          <Card.Text>
+                            {role}
+                          </Card.Text>
+                          <Button
+                            variant="primary"
+                            onClick={this.handleShow.bind(this)}
+                          >
+                            View Application
+                          </Button>
+                        </Card.Body>
+                      </div>
+                    </div>
+                  </Card>
+                  <Modal
+                    show={this.state.show}
+                    onHide={this.handleClose.bind(this)}
+                    backdrop="static"
+                    keyboard={false}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                  >
+                    <Modal.Header closeButton>
+                      <div className="card flex-row flex-wrap">
+                        <div className="card-header border-0">
+                          <Card.Img src={applicant.picture_name} alt="Card image" style={{maxWidth:150, maxHeight:150}}/>
+                        </div>
+                      </div>
+                      <Modal.Title style={{marginLeft: 15}}>
+                        {applicant.name}
+                        <p> {role} </p>
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <span style={{fontWeight: 'bold', marginLeft: '10px'}}>School:</span> {applicant.school_name}
+                        <div style={{float: 'right', marginRight:'20px'}}> <span style={{fontWeight: 'bold'}}>GPA:</span> {applicant.gpa} </div> <br/>
+                        <span style={{fontWeight: 'bold', marginLeft: '10px'}}>School Year:</span> {applicant.school_year}
+                        <div style={{float:'right', marginRight:'20px'}}> <span style={{fontWeight: 'bold'}}>Location:</span> {applicant.current_location} </div> <br/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <div className="mb-2">
+                            <Button variant="secondary" size="lg" onClick={this.openPdfResume.bind(this)}> Show Resume </Button> {' '}
+                            <Button variant="secondary" size="lg" onClick={this.openPdfCover.bind(this)} > Show Cover Letter</Button> {' '}
+                            <Button variant="secondary" size="lg" onClick={this.openVid.bind(this)}>Play Video</Button> 
+                        </div>
+                      <Button
+                        variant="secondary"
+                        onClick={this.handleClose.bind(this)}
+                      >
+                        Close
+                      </Button>
+                      <Button variant="primary" type="submit" onClick={this.handleSubmit.bind(this)}>Respond</Button> 
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={this.state.isOpen}
+                    onHide={this.closeVid.bind(this)}
+                    keyboard={false}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                  >
+                      <Player
+                        playsInline
+                        poster={applicant.picture_name}
+                        src={video_name}
+                        />
+                  </Modal>
+                  <Modal
+                    show={this.state.showPdfCover}
+                    onHide={this.closePdf.bind(this)}
+                    keyboard={false}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                  >
+                      {<ViewPdfCoverLetter url={conver_letter_name}/>}
+                  </Modal>
+                  <Modal
+                    show={this.state.showPdfResume}
+                    onHide={this.closePdf.bind(this)}
+                    keyboard={false}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                  >
+                      {<ViewPdfResume url={resume_name}/>}
+                  </Modal>
+              </div>
+            :
+              <h1>Loading</h1>
+          }
          </div>
        );
     }
@@ -357,7 +379,7 @@ class ViewPdfCoverLetter extends React.Component {
             <div>
                 {/* // "https://cors-anywhere.herokuapp.com/" is the cors header , add the s3 link afterwards */}
             <Document
-              file={"https://cors-anywhere.herokuapp.com/"+"http://career-pitch.s3.amazonaws.com/quiz6_sol.pdf"}
+              file={"https://cors-anywhere.herokuapp.com/"+ this.props.url}
               onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
               onLoadError={console.error}
             >
@@ -388,7 +410,7 @@ class ViewPdfResume extends React.Component {
             <div>
                 {/* // "https://cors-anywhere.herokuapp.com/" is the cors header , add the s3 link afterwards */}
             <Document
-              file={"https://cors-anywhere.herokuapp.com/"+"http://career-pitch.s3.amazonaws.com/quiz6_sol.pdf"}
+              file={"https://cors-anywhere.herokuapp.com/"+ this.props.url}
               onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
               onLoadError={console.error}
             >
