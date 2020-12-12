@@ -26,7 +26,9 @@ def fill_db():
         applicant_atrr = ['email', 'name', 'school_name', 'school_year', 'gpa', 'current_location', 'picture_name']
         applicants_data = [ ('abravo@gmail.com', 'anthony','ccny','junior',3.84,'nyc','/applicant/abravo@gmail.jpg'),
                             ('aninda@gmail.com', 'aninda','ccny','senior',3.94,'nyc','/applicant/aninda@gmail.jpg'),
-                            ('hasan@gmail.com', 'hasan', 'ccny','freshman',3.91,'nyc','/applicant/hasan@gmail.jpg') ]
+                            ('hasan@gmail.com', 'hasan', 'ccny','freshman',3.91,'nyc','/applicant/hasan@gmail.jpg') 
+        ]
+
         recruiter_attr = ['email', 'name', 'company', 'role', 'company_logo_name', 'company_info']
         recruiter_data = [ 
             ('elsa@ibm.com', 'elsa', 'ibm','university recruiter','https://career-pitch.s3.amazonaws.com/applicant/elsa@ibm.com/ibm.png','good company'),
@@ -36,16 +38,16 @@ def fill_db():
 
         job_atrr = ['recruiter_email', 'role', 'experience_level', 'location', 'salary']
         job_data = [  
-            ('elsa@ibm.com','new grad back end','0 years','yorktown, NY', 100000.00),
-            ('elsa@ibm.com', 'senior front end', '7+ years', 'san francisco, CA', 178000.00),
+            ('elsa@ibm.com','new grad backend','0 years','yorktown, NY', 100000.00),
+            ('elsa@ibm.com', 'new grad frontend', '0 years', 'san francisco, CA', 108000.00),
             ('lima@fb.com', 'junior ios mobile', '1+ years', 'Seatle', 130000.00) 
         ]
 
         application_attr = ['applicant', 'recruiter', 'role', 'status', 'video_name', 'resume_name', 'cover_letter_name']
         application_data = [  
-            ('abravo@gmail.com', 'elsa@ibm.com', 'new grad back end', 'submitted application', '/applications/ibm/abravo@gmail_new_grad_back_end_video.mp4', '/applications/ibm/abravo@gmail_new_grad_back_end_resume.pdf', '/applications/ibm/abravo@gmail_new_grad_back_end_cover.pdf'),
-            ('abravo@gmail.com', 'lima@fb.com', 'junior ios mobile', 'phone screen', '/applications/facebook/abravo@gmail_junior_ios_mobile_video.mp4', '/applications/facebook/abravo@gmail_junior_ios_mobile_resume.pdf', '/applications/facebook/abravo@gmail_junior_ios_mobile_cover.pdf'),
-            ('hasan@gmail.com', 'elsa@ibm.com', 'new grad back end', 'onsite', '/applications/ibm/hasan@new_grad_back_end_video.mp4', '/applications/ibm/hasan@new_grad_back_end_resume.pdf', '/applications/ibm/hasan@new_grad_back_end_cover.pdf') 
+            ('abravo@gmail.com', 'elsa@ibm.com', 'new grad backend', 'submitted application', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+backend/abravo%40gmail.com/second.mp4', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+backend/abravo%40gmail.com/resume1.pdf', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+backend/abravo%40gmail.com/cover1.pdf'),
+            ('abravo@gmail.com', 'lima@fb.com', 'junior ios mobile', 'phone screen', 'https://career-pitch.s3.amazonaws.com/application/lima%40fb.com/junior+ios+mobile/abravo%40gmail.com/first.mp4', 'https://career-pitch.s3.amazonaws.com/application/lima%40fb.com/junior+ios+mobile/abravo%40gmail.com/resume3.pdf', 'https://career-pitch.s3.amazonaws.com/application/lima%40fb.com/junior+ios+mobile/abravo%40gmail.com/cover3.pdf'),
+            ('hasan@gmail.com', 'elsa@ibm.com', 'new grad frontend', 'onsite', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+frontend/hasan%40gmail.com/third.mp4', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+frontend/hasan%40gmail.com/resume2.pdf', 'https://career-pitch.s3.amazonaws.com/application/elsa%40ibm.com/new+grad+frontend/hasan%40gmail.com/cover2.pdf') 
         ]
 
         add_object_to_db(applicant_atrr, applicants_data, Applicant)

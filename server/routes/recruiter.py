@@ -70,7 +70,7 @@ def adding_profile_pic():
 
     recruiter[0].company_logo_name = obj_url
     session.commit()
-    response =  jsonify({"code": 1, "message": 'testing route'})
+    response =  jsonify({"code": 1, "message": 'added company logo'})
     return make_response(response, 201)
 
 

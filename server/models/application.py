@@ -18,6 +18,17 @@ class Application(Base):
         ),
     )
 
+    def to_json(self):
+        return {
+            'applicant': self.applicant,
+            'recruiter': self.recruiter,
+            'role': self.role,
+            'status': self.status,
+            'video_name': self.video_name,
+            'resume_name': self.resume_name,
+            'conver_letter_name': self.cover_letter_name
+        }
+
     def __repr__(self):
         return f'<Application({self.applicant}, {self.recruiter}, {self.role})>'
         
