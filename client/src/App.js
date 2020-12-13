@@ -40,8 +40,7 @@ class App extends Component {
     return( 
     <Router>
       <Switch>
-        <Route exact path="/" component={MainPage} />
-        <Route path="/login" component={LoginPage} />
+        <Route exact path="/" component={LoginPage} />
         <Route path="/feed" component={HomeFeed} /> 
         <Route path="/feedRecruiter" component={HomeFeedRecruiter}/>
         <Route component={NotFoundPage} />

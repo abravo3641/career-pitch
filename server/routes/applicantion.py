@@ -21,6 +21,14 @@ def get_application():
     response =  jsonify({"code": 1, "application": application[0].to_json()})
     return make_response(response, 201) 
 
+
+@application_route.route('/email', methods=['GET'])
+def get_application_by_email():
+    applicant = request.args.get('applicant')
+    applications = [application.to_json() for application in session.query(Application).filter(Application.applicant == applicant).all()]
+    response =  jsonify({"code": 1, "applications": applications})
+    return make_response(response, 201) 
+
 @application_route.route('/all', methods=['GET'])
 def get_applications():
     applications = [application.to_json() for application in session.query(Application).all()]

@@ -28,7 +28,8 @@ class HomeFeedRecruiter extends React.Component {
             activeTab: props.activeTab || "1",
             recruiterEmail: "",
             applications: [],
-            count:0
+            count:0,
+            candidates: []
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
@@ -36,7 +37,7 @@ class HomeFeedRecruiter extends React.Component {
     componentDidMount() {
       firebase.auth().onAuthStateChanged(user => {
         if (!user) {
-          this.props.history.push('/login');
+          this.props.history.push('/');
         }
         else{
           this.setState({recruiterEmail: user.email})
@@ -44,6 +45,8 @@ class HomeFeedRecruiter extends React.Component {
             const validApplications = res.applications.filter(application => application.recruiter === this.state.recruiterEmail);
             this.setState({applications: validApplications});
           })
+
+          fetch('/api/applicant/all').then(res => res.json()).then(res => this.setState({candidates: res.applicants}))
         }
       })
     }
@@ -52,7 +55,7 @@ class HomeFeedRecruiter extends React.Component {
       firebase.auth().signOut().then(() => {
         //Logged out sucessful
         console.log('Logged user out successfully');
-        this.props.history.push('/login');
+        this.props.history.push('/');
       }).catch((err) => {
         //Handle error
         console.log(`Error: ${err}`);
@@ -95,11 +98,12 @@ class HomeFeedRecruiter extends React.Component {
                       <Nav.Link eventKey="2">Post a Job</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                      <Nav.Link eventKey="disabled">Candidates</Nav.Link>
+                      <Nav.Link eventKey="3">Candidates</Nav.Link>
                   </Nav.Item>
                   </Nav>
                   {(this.state.activeTab==="1") && this.state.applications.map(application => <ApplicantCards key={++this.state.count} application={application} recruiterEmail={recruiterEmail}/>)}
                   {(this.state.activeTab==="2") && <PostJob recruiterEmail = {recruiterEmail}/> }
+                  {(this.state.activeTab==="3") && this.state.candidates.map(candidate => <CandidateCards key={++this.state.count} candidate={candidate}/>) }
                 </div>
                 :
                 <h1>Please log in!</h1>
@@ -421,5 +425,89 @@ class ViewPdfResume extends React.Component {
         );
     }
 }
+
+
+class CandidateCards extends React.Component {
+  constructor(props){
+      super(props);
+      this.state = {show:false}
+  }
+  
+  handleClose(){
+      this.setState({show: false});
+  }
+  handleShow(){
+      this.setState({show: true});
+  }
+
+  render(){
+    const applicant = this.props.candidate;
+     return (
+       <div>
+        {
+          applicant ?
+            <div> 
+              <Card>
+                  <div className="card flex-row flex-wrap">
+                    <div className="card-header border-0">
+                      <Card.Img width="100%" src={applicant.picture_name} alt="Card image" style={{maxWidth:250, maxHeight:250}}/>
+                    </div>
+                    <div className="card-block">
+                      <Card.Body>
+                        <Card.Title>{applicant.name}</Card.Title>
+                        <Card.Text>
+                          {applicant.school_year + ' at ' + applicant.school_name }
+                        </Card.Text>
+                        <Button
+                          variant="primary"
+                          onClick={this.handleShow.bind(this)}
+                        >
+                          View More Info
+                        </Button>
+                      </Card.Body>
+                    </div>
+                  </div>
+                </Card>
+                <Modal
+                  show={this.state.show}
+                  onHide={this.handleClose.bind(this)}
+                  backdrop="static"
+                  keyboard={false}
+                  size="lg"
+                  aria-labelledby="contained-modal-title-vcenter"
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <div className="card flex-row flex-wrap">
+                      <div className="card-header border-0">
+                        <Card.Img src={applicant.picture_name} alt="Card image" style={{maxWidth:150, maxHeight:150}}/>
+                      </div>
+                    </div>
+                    <Modal.Title style={{marginLeft: 15}}>
+                      {applicant.name}
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                      <span style={{fontWeight: 'bold', marginLeft: '10px'}}>School:</span> {applicant.school_name}
+                      <div style={{float: 'right', marginRight:'20px'}}> <span style={{fontWeight: 'bold'}}>GPA:</span> {applicant.gpa} </div> <br/>
+                      <span style={{fontWeight: 'bold', marginLeft: '10px'}}>School Year:</span> {applicant.school_year}
+                      <div style={{float:'right', marginRight:'20px'}}> <span style={{fontWeight: 'bold'}}>Location:</span> {applicant.current_location} </div> <br/>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Modal.Title style={{float: 'right'}}>
+                      Email: {applicant.email}
+                    </Modal.Title>
+                  </Modal.Footer>
+                </Modal>
+            </div>
+          :
+            <h1>Loading</h1>
+        }
+       </div>
+     );
+  }
+}
+
+
 
 export default HomeFeedRecruiter;

@@ -50,6 +50,7 @@ def delete_recruiter():
     #delete company logo from s3
     bucket = s3_resource.Bucket(bucket_name)
     bucket.objects.filter(Prefix=f'recruiter/{email}').delete()
+    bucket.objects.filter(Prefix=f'application/{email}').delete()
     session.commit()
     response =  jsonify({"code": 1, "message": "Successfully deleted recruiter!"})
     return make_response(response, 201)
