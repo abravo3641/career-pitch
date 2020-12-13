@@ -41,14 +41,21 @@ def add_applicant():
 @applicant_route.route('/', methods=['DELETE'])
 def delete_applicant():
     email = request.args.get('email')
-    res = session.query(Applicant).filter(Applicant.email == email).delete()
-    if res == 0:
+    res = session.query(Applicant).filter(Applicant.email == email).all()
+    if not res:
         response =  jsonify({"code": -1, "message": "Email not found"})
         return make_response(response, 401)
 
-    #delete profile pic from s3
+    applications = [application.to_json() for application in session.query(Application).filter(Application.applicant == email)]
+    paths = ['/'.join(application['video_name'].split('/')[3:7]) for application in applications]
+    session.query(Applicant).filter(Applicant.email == email).delete()
+
+    # #delete profile pic from s3 and all applications applicant submitted
     bucket = s3_resource.Bucket(bucket_name)
     bucket.objects.filter(Prefix=f'applicant/{email}').delete()
+    for path in paths:
+        bucket.objects.filter(Prefix=path).delete()
+
     session.commit()
     response =  jsonify({"code": 1, "message": "Successfully deleted applicant"})
     return make_response(response, 201)
