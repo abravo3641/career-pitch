@@ -2,7 +2,7 @@ The content below is an example submission document. Replace the text below the 
 
 
 # Career Pitch
-
+http://ec2-54-211-232-103.compute-1.amazonaws.com/
 
 ## Overview
 
@@ -53,37 +53,37 @@ npm start
 (___TODO__: A description of your application's data and their relationships to each other_)
 
 Applicant:
-Name
-Email (K)
-School
-Year
-GPA
-Location
+Name,
+Email (K),
+School,
+Year,
+GPA,
+Location,
 Picture_name
 
 Recruiter:
-name
-email (K)
-company
-role
-company_logo
+name,
+email (K),
+company,
+role,
+company_logo,
 company_info
 
 
 Jobs:
-Recruiter (FK) - email	
-Role
-Experience Level
-Location
+Recruiter (FK) - email,	
+Role,
+Experience Level,
+Location,
 Salary
 
 
 Applications:
-Applicant (FK)
-Job (FK)
-Status
-Video_name
-Resume_name
+Applicant (FK),
+Job (FK),
+Status,
+Video_name,
+Resume_name,
 Cover_letter_name
 
 
@@ -171,3 +171,5 @@ https://blog.miguelgrinberg.com/post/how-to-deploy-a-react--flask-project
 Anthony Bravo
 Aninda Halder
 Mahmudul Hasan
+
+
