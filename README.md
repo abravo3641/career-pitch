@@ -9,12 +9,40 @@ The content below is an example submission document. Replace the text below the 
 A lot of the events that normally would have happened in person are now being held virtually due to social distancing guidelines. One of these events are conferences such as SHPE, SASE and Grace Hopper which give the opportunity for underrepresented groups to connect with different individuals. One of the most important events is the career fair which has shifted to a virtual environment, but we have experienced first hand that the experience is not the same. Conferences such as SASE and Tapia are only allowing students to chat to employers and never get that in person experience. Our goal is to build a platform that would try to offer a similar experience as an in person event. It will also allow long distance fairs, a more viable option and help increase the outreach of both Employers and potential candidates. Users can store their information and share their skills in a much efficient manner while the Employers will also be able to screen candidates with much more dataset allowing them to choose the best candidates for them to follow up with. This makes attending fairs much less tedious and let candidates focus more on the companies/organizations they are interested in joining.
 
 ## Getting Started
-(___TODO__: These instructions will get you a copy of the project up and running on your local machine for development and testing purposes_)
 
+The Backend Dev Setup:
+- Have Python3 on the system
+- Clone this app
+- Start Virtual Environemnt with Python3 
+- Run
+```bash
+# Back-End terminal 1
+cd server
+cp .env.example .env
+pyenv local 3.8.5
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+The Frontend Dev Setup:
+- Install Node 10.16.0 on the system
+```bash
+# Front-End terminal 2
+cd client
+cp .env.example .env
+npm install
+npm start
+```
+- Backend-Server will run at: http://localhost:5000
+- Frontend-Client will run at: http://localhost:3000
 
 ## Requirements
 
 (___TODO__: List out any technologies needed to run your project_)
+
+
+
 
 
 ## Data Model
