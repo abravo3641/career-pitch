@@ -1,4 +1,3 @@
-The content below is an example submission document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
 
 
 # Career Pitch
@@ -50,9 +49,8 @@ npm start
 
 ## Data Model
 
-(___TODO__: A description of your application's data and their relationships to each other_)
 
-Applicant:
+- Applicant:
 Name,
 Email (K),
 School,
@@ -61,7 +59,7 @@ GPA,
 Location,
 Picture_name
 
-Recruiter:
+- Recruiter:
 name,
 email (K),
 company,
@@ -70,7 +68,7 @@ company_logo,
 company_info
 
 
-Jobs:
+- Jobs:
 Recruiter (FK) - email,	
 Role,
 Experience Level,
@@ -78,7 +76,7 @@ Location,
 Salary
 
 
-Applications:
+- Applications:
 Applicant (FK),
 Job (FK),
 Status,
