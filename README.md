@@ -1,14 +1,12 @@
 The content below is an example submission document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
 
-(___TODO__: Your project name_)
 
-# Shopalot
+# Career Pitch
 
 
 ## Overview
 
-(___TODO__: A brief one or two paragraph, high-level description of your project_)
-
+A lot of the events that normally would have happened in person are now being held virtually due to social distancing guidelines. One of these events are conferences such as SHPE, SASE and Grace Hopper which give the opportunity for underrepresented groups to connect with different individuals. One of the most important events is the career fair which has shifted to a virtual environment, but we have experienced first hand that the experience is not the same. Conferences such as SASE and Tapia are only allowing students to chat to employers and never get that in person experience. Our goal is to build a platform that would try to offer a similar experience as an in person event. It will also allow long distance fairs, a more viable option and help increase the outreach of both Employers and potential candidates. Users can store their information and share their skills in a much efficient manner while the Employers will also be able to screen candidates with much more dataset allowing them to choose the best candidates for them to follow up with. This makes attending fairs much less tedious and let candidates focus more on the companies/organizations they are interested in joining.
 
 ## Getting Started
 (___TODO__: These instructions will get you a copy of the project up and running on your local machine for development and testing purposes_)
@@ -70,23 +68,32 @@ An Example `OrderItems`:
 
 ## Site map
 
-(___TODO__: Draw out a site map that shows how pages are related to each other_)
-
-Here's an [example](https://www.kauligmedia.com/media/1589/sitemap-01.jpg). Mostly looking for the names of pages and where they flow to.
+https://www.figma.com/file/ESf6D4WlJP5rQdGF9OD8Gz/Career-Pitch?node-id=0%3A1
 
 ## User Stories or Use Cases
 
 (___TODO__: Write out how your application will be used through [user stories](http://en.wikipedia.org/wiki/User_story#Format)_)
 
-1. As non-registered user, I can create a new account on the site.
-2. As a user, I can log in to the site.
-3. As a user, I can view items for sale.
-4. As a user, I can add items to a shopping cart.
-5. as a user, I can remove items from a shopping cart.
-6. as a user, I can purchase items in my cart.
+1. As non-registered applicant, I can create a new account on the site.
+2. As non-registered recruiter, I can create a new account on the site.
+3. As a applicant, I can log into the site.
+4. As a recruiter, I can log into the site.
+5. As an applicant I can view all the job posting that are avaliable
+6. As an applicant, I can apply to a job by uploading my resume, cover letter and vide pitch for that specific job.
+7. As an applicant, I can view my past applied jobs to keep track of their history.
+8. As a recruiter, I can post a job by adding all the information related to that job. 
+9. As a recruiter, I can view all applicants that have applied to the jobs I have posted. 
+10. As a recruiter, I can view the applicant information for the job they have applied for. (Resume, cover letter & video).
+11. As a recruiter, I can also see a list of all applicants in the platform. 
+12. As an applicant, I can log out of the site.
+13. As a recruiter, I can log out of the site.
 
 ## References Used
-
-(___TODO__: List any tutorials or material referenced that you've based your code off of_)
+https://www.sqlalchemy.org/
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
+https://blog.miguelgrinberg.com/post/how-to-deploy-a-react--flask-project
 
 ## Authors
+Anthony Bravo
+Aninda Halder
+Mahmudul Hasan
