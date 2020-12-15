@@ -39,10 +39,13 @@ npm start
 
 ## Requirements
 
-(___TODO__: List out any technologies needed to run your project_)
-
-
-
+- Node 
+- Python
+- AWS
+- Firebase
+- Postgres
+- React and React Bootstrap
+- Active Acces to Internet
 
 
 ## Data Model
