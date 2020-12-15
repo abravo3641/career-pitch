@@ -2,6 +2,7 @@
 
 # Career Pitch
 http://ec2-54-211-232-103.compute-1.amazonaws.com/
+https://bit.ly/3gQWBR1
 
 ## Overview
 
@@ -164,7 +165,6 @@ https://www.figma.com/file/ESf6D4WlJP5rQdGF9OD8Gz/Career-Pitch?node-id=0%3A1
 https://www.sqlalchemy.org/
 https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
 https://blog.miguelgrinberg.com/post/how-to-deploy-a-react--flask-project
-https://bit.ly/3gQWBR1
 
 ## Authors
 - Anthony Bravo
