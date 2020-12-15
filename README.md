@@ -145,7 +145,6 @@ https://www.figma.com/file/ESf6D4WlJP5rQdGF9OD8Gz/Career-Pitch?node-id=0%3A1
 
 ## User Stories or Use Cases
 
-(___TODO__: Write out how your application will be used through [user stories](http://en.wikipedia.org/wiki/User_story#Format)_)
 
 1. As non-registered applicant, I can create a new account on the site.
 2. As non-registered recruiter, I can create a new account on the site.
