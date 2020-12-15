@@ -52,50 +52,93 @@ npm start
 
 (___TODO__: A description of your application's data and their relationships to each other_)
 
-The application will store user, items, and orders.
+Applicant:
+Name
+Email (K)
+School
+Year
+GPA
+Location
+Picture_name
 
-- Users can have many orders.
-- Orders can have many items.
+Recruiter:
+name
+email (K)
+company
+role
+company_logo
+company_info
 
-(___TODO__: Sample resources_)
 
-An Example `User`:
+Jobs:
+Recruiter (FK) - email	
+Role
+Experience Level
+Location
+Salary
+
+
+Applications:
+Applicant (FK)
+Job (FK)
+Status
+Video_name
+Resume_name
+Cover_letter_name
+
+
+An Example `Applicant`:
 
 ```javascript
 {
-  id: 5,
-  firstName: "Mary",
-  lastName: "Jane"
+    "email": "bravo@gmail.com",
+    "gpa": 3.84,
+    "location": "nyc",
+    "name": "anthony",
+    "picture_name": "/applicant/abravo@gmail.jpg",
+    "school": "ccny",
+    "year": 5
 }
 ```
 
-An Example `Item`:
+
+An Example `Recruiter`:
 
 ```javascript
 {
-  id: 3,
-  name: "Lamp",
-  price: "$19.99"
+    "email": "elsa2@ibm.com",
+    "company": "ibm",
+    "company_info": "good company",
+    "company_logo_name": "/company/ibm.jpg",
+    "name": "elsa2",
+    "role": "university recruiter"
 }
 ```
 
-An Example `Order`:
+An Example `Jobs`:
 
 ```javascript
 {
-  id: 1,
-  user_id: 5,// a reference to a User object
+  "recruiter-email":"elsa@ibm.com",
+  "role":"frontend developer",
+  "experience-level":"Entry level",
+  "location":"NYC"
+  "salary":"85k-90k"
 }
-```
 
-An Example `OrderItems`:
+```
+An Example `Applications`:
 
 ```javascript
 {
-  item_id: 3,
-  order_id: 1 // References an Order object
+  "applicant-email":"elsa@hotmail.com",
+  "job":"frontend developer",
+  "status":"Pending",
+  "Video_name":fileobj,
+  "resume_name":fileobj,
+  "Cover_letter": fileobj
+  
 }
-```
 
 ## Site map
 
