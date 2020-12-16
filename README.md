@@ -1,8 +1,9 @@
 
 
 # Career Pitch
-- http://ec2-54-211-232-103.compute-1.amazonaws.com/
-- https://bit.ly/3gQWBR1
+- Deployed Link: http://ec2-54-211-232-103.compute-1.amazonaws.com/
+- Slides: https://bit.ly/3gQWBR1
+- Demo Video: https://bit.ly/37nBjHF
 
 ## Overview
 
